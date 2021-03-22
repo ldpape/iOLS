@@ -1,0 +1,9 @@
+v 1
+d Louis Pape
+p iOLS_OLS IOLS_OLS - Run Small Sample iOLS Procedure
+
+* l word-to-show path-or-url [description]
+* t: Directories within site:
+* t path [description]
+* Packages:
+* p pkgname [description]
