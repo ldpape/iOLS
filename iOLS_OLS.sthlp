@@ -82,7 +82,7 @@ as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego
 
 {pstd}Louis Pape {break}
 CREST {break}
-Email: {browse "mailto:louis.pape@polytechnique.edu":sergio.correia@gmail.com}
+Email: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.edu}
 {p_end}
 
 
