@@ -1,17 +1,17 @@
 {smcl}
-{* *! version 1.1.0 22march2021}{...}
+{* *! version 1.0 22march2021}{...}
 {vieweralsosee "[R] poisson" "help poisson"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "reghdfe" "help reghdfe"}{...}
 {vieweralsosee "ppml" "help ppml"}{...}
 {vieweralsosee "ppmlhdfe" "help ppmlhdfe"}{...}
-{viewerjumpto "Syntax" "ppmlhdfe##syntax"}{...}
-{viewerjumpto "Description" "ppmlhdfe##description"}{...}
-{viewerjumpto "Citation" "ppmlhdfe##citation"}{...}
-{viewerjumpto "Authors" "ppmlhdfe##contact"}{...}
-{viewerjumpto "Examples" "ppmlhdfe##examples"}{...}
-{viewerjumpto "Description" "ppmlhdfe##Testing"}{...}
-{viewerjumpto "Stored results" "ppmlhdfe##results"}{...}
+{viewerjumpto "Syntax" "iOLS_OLS##syntax"}{...}
+{viewerjumpto "Description" "iOLS_OLS##description"}{...}
+{viewerjumpto "Citation" "iOLS_OLS##citation"}{...}
+{viewerjumpto "Authors" "iOLS_OLS##contact"}{...}
+{viewerjumpto "Examples" "iOLS_OLS##examples"}{...}
+{viewerjumpto "Description" "iOLS_OLS##Testing"}{...}
+{viewerjumpto "Stored results" "iOLS_OLS##results"}{...}
 {title:Title}
 
 {p2colset 5 18 20 2}{...}
@@ -34,7 +34,7 @@
 
 
 {syntab:SE/Robust}
-{synopt:{opt vce}{cmd:(}{help ppmlhdfe##opt_vce:vcetype}{cmd:)}}{it:vcetype}
+{synopt:{opt vce}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}}{it:vcetype}
 may be {opt r:obust} (default) or {opt cl:uster} {help fvvarlist} (allowing two- and multi-way clustering){p_end}
 
 
@@ -100,8 +100,7 @@ Citation to be defined.
 
 {pstd}First, we will replicate Example 1 from Stata's
 {browse "https://www.stata.com/manuals/rpoisson.pdf":poisson manual}.
-Note that we run poisson with robust standard errors in order to obtain
-standard errors matching ppmlhdfe:{p_end}
+{p_end}
 {hline}
 {phang2}{cmd:. use "http://www.stata-press.com/data/r14/airline"}{p_end}
 {phang2}{cmd:. iOLS_OLS injuries XYZowned, vce(robust)}{p_end}
@@ -118,6 +117,3 @@ standard errors matching ppmlhdfe:{p_end}
 {synoptset 24 tabbed}{...}
 {syntab:Scalars}
 {synopt:{cmd:e(N)}}number of observations{p_end}
-
-
-{p2colreset}{...}
