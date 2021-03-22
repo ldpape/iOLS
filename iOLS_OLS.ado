@@ -1,9 +1,5 @@
-
- ----------------------------------------------------------------------------
- iOLS avec reg ----------------------------------------------------------------
- ----------------------------------------------------------------------------
-cap program drop iols
-program define iols, rclass
+cap program drop iOLS_OLS
+program define iOLS_OLS, rclass
 	syntax [anything] [if] [,  Robust CLuster(varlist numeric)]
 	marksample touse
 
