@@ -4,3 +4,4 @@ d iOLS_OLS
 d Program to run small sample iOLS
 d Distribution-Date: 22 March 2021
 f iOLS_OLS.ado
+f iOLS_OLS.sthlp
