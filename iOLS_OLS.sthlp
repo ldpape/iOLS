@@ -33,7 +33,7 @@
 {synopt:{opt}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}}{it:vcetype}
 may be {opt c:lassic} (default), {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering){p_end}
 {syntab:Delta}
-{synopt:{opt}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}} {it:delta} is any strictly positive constant. {p_end}
+{it:delta} is any strictly positive constant. {p_end}
 
 
 
