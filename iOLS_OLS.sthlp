@@ -33,9 +33,9 @@
 {synopt :{opth a:bsorb(iOLS_OLS##indepvars:indepvars)}} list of explanatory variables{p_end}
 
 
-{syntab:SE/Robust}
-{synopt:{opt vce}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}}{it:vcetype}
-may be {opt r:obust} (default) or {opt cl:uster} {help fvvarlist} (allowing two- and multi-way clustering){p_end}
+{syntab:SE/Robust/Cluster}
+{synopt:{opt}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}}{it:vcetype}
+may be {opt: classic} (default), {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering){p_end}
 
 
 {marker description}{...}
