@@ -36,6 +36,12 @@
 may be {opt c:lassic} (default), {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering){p_end}
 
 
+{syntab:Delta}
+{synopt:{opt}{cmd:(}{help iOLS_OLS##delta}{cmd:)}}
+{it:delta} is any strictly positive constant. {p_end}
+
+
+
 {marker description}{...}
 {title:Description}
 
