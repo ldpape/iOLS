@@ -40,7 +40,7 @@ may be {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering)
 {marker description}{...}
 {title:Description}
 
-{pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares,
+{pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares, Hello
 as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego, Benatia, and Pape (2021)}.
 
 {pstd}This package:
