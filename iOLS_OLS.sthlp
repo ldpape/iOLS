@@ -111,13 +111,16 @@ Citation to be defined.
 {p_end}
 {hline}
 
-{phang2}{cmd:. clear all
-webuse womenwk
-replace wage = 0 if missing(wage)
-gen log_wage = log(wage)
-gen employment = wage!=0 }{p_end}
+{phang2}{cmd:. clear all}{p_end}
+{phang2}{cmd:. webuse womenwk }{p_end}
+{phang2}{cmd:. replace wage = 0 if missing(wage) }{p_end}
+{phang2}{cmd:. gen log_wage = log(wage) }{p_end}
+{phang2}{cmd:. gen employment = wage!=0 }{p_end}
 
+{phang2}{cmd:. iOLS_OLS wage education age , robust }{p_end}
 
+{phang2}{cmd:. program iOLS_boostrap, rclass  }{p_end}
+{phang2}{ estimate the model  }{p_end}
 
 
 {marker results}{...}
