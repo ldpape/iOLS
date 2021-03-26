@@ -97,7 +97,7 @@ Citation to be defined.
 {marker examples}{...}
 {title:Examples}
 
-{pstd}First, we will replicate Example 1 from Stata's
+{pstd} First, we will replicate Example 1 from Stata's
 {browse "https://www.stata.com/manuals/rpoisson.pdf":poisson manual}.
 {p_end}
 {hline}
@@ -110,18 +110,15 @@ Citation to be defined.
 {pstd} Second, we show how to test for the pattern of zeros using iOLS with delta = 1.
 {p_end}
 {hline}
-
 {phang2}{cmd:. clear all}{p_end}
 {phang2}{cmd:. webuse womenwk }{p_end}
 {phang2}{cmd:. replace wage = 0 if missing(wage) }{p_end}
 {phang2}{cmd:. gen log_wage = log(wage) }{p_end}
 {phang2}{cmd:. gen employment = wage!=0 }{p_end}
-
 {phang2}{cmd:. iOLS_OLS wage education age , robust }{p_end}
-
 {phang2}{cmd:. program iOLS_boostrap, rclass  }{p_end}
 {phang2}{ estimate the model  }{p_end}
-
+{hline}
 
 {marker results}{...}
 {title:Stored results}
