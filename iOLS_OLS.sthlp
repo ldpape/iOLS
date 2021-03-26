@@ -70,10 +70,10 @@ as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego
 {marker caveats}{...}
 {title:Caveats}
 
-{pstd}Convergence is decided based on coefficients and not on the modulus of the contraction mapping. {opth tol:erance(#)}.
+{pstd}Convergence is decided based on coefficients and not on the modulus of the contraction mapping.
 
 
-{pstd}The {help reg postestimation##predict:predict}, {help test}, and {help margins} postestimation commands are available after {cmd:iOLS_OLS}.
+{pstd}The {help test} postestimation commands are available after {cmd:iOLS_OLS}.  This command yields 'xb' using "predict xb, xb" . To obtain y_hat, you will need to also run "gen y_hat = exp(xb)".
 
 
 {marker contact}{...}
@@ -102,9 +102,22 @@ Citation to be defined.
 {p_end}
 {hline}
 {phang2}{cmd:. use "http://www.stata-press.com/data/r14/airline"}{p_end}
-{phang2}{cmd:. iOLS_OLS injuries XYZowned, vce(robust)}{p_end}
-{phang2}{cmd:. poisson injuries XYZowned}{p_end}
+{phang2}{cmd:. iOLS_OLS injuries XYZowned, robust}{p_end}
+{phang2}{cmd:. poisson injuries XYZowned, rosut}{p_end}
 {hline}
+
+
+{pstd} Second, we show how to test for the pattern of zeros using iOLS with delta = 1.
+{p_end}
+{hline}
+
+{phang2}{cmd:. clear all
+webuse womenwk
+replace wage = 0 if missing(wage)
+gen log_wage = log(wage)
+gen employment = wage!=0 }{p_end}
+
+
 
 
 {marker results}{...}
