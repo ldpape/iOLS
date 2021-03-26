@@ -29,9 +29,9 @@
 {synoptset 22 tabbed}{...}
 {synopthdr}
 {synoptline}
-{syntab:SE/Robust/Cluster}
+{syntab:SE: Robust/Cluster}
 {synopt:{opt}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}}{it:vcetype}
-may be {opt c:lassic} (default), {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering){p_end}
+may be {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering){p_end}
 {syntab:Delta}
 {synopt:}{it:delta} is any strictly positive constant. {p_end}
 
@@ -119,7 +119,7 @@ Citation to be defined.
 {phang2}{. program iOLS_boostrap, rclass  }{p_end}
 {phang2}{cmd:. iOLS_OLS wage education age , robust  }{p_end}
 {phang2}{cmd:. scalar delta = 1  }{p_end}
-{phang2}{. * lhs of test   }{p_end}
+{phang2}. * lhs of test   {p_end}
 {phang2}{cmd:. predict xb_temp, xb  }{p_end}
 {phang2}{cmd:. gen u_hat_temp = wage*exp(-xb_temp)  }{p_end}
 {phang2}{cmd:. gen lhs_temp = log(delta+u_hat_temp) - log(delta)  }{p_end}
