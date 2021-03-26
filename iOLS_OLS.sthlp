@@ -141,8 +141,11 @@ Citation to be defined.
 
 {phang2}{cmd:. bootstrap lambda = _b[rhs_temp] , reps(50): iOLS_boostrap  }{p_end}
 {phang2}{cmd:. test lambda==1  }{p_end}
+{hline}
 
-
+{pstd} Third, we show how to test for the pattern of zeros using Poisson regression.
+{p_end}
+{hline}
 {phang2}{cmd:. poisson wage education  age , robust  }{p_end}
 
 {phang2}{cmd:. program Poisson_boostrap, rclass  }{p_end}
