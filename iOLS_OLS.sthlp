@@ -121,7 +121,7 @@ Citation to be defined.
 {phang2}{cmd:. program iOLS_boostrap, rclass  }{p_end}
 {phang2}{cmd:. iOLS_OLS wage education age , robust  }{p_end}
 {phang2}{cmd:. scalar delta = 1  }{p_end}
-{phang2}{cmd:. * lhs of test  }{p_end}
+{phang2}{cmd:. *lhs of test  }{p_end}
 {phang2}{cmd:. predict xb_temp, xb  }{p_end}
 {phang2}{cmd:. gen u_hat_temp = wage*exp(-xb_temp)  }{p_end}
 {phang2}{cmd:. gen lhs_temp = log(delta+u_hat_temp) - log(delta)  }{p_end}
