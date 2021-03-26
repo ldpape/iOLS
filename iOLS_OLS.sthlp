@@ -145,7 +145,7 @@ Citation to be defined.
 
 {phang2}{cmd:. poisson wage education  age , robust  }{p_end}
 
-{phang2}{program Poisson_boostrap, rclass  }{p_end}
+{phang2}{cmd:. program Poisson_boostrap, rclass  }{p_end}
 {phang2}{cmd:. estimate the model  }{p_end}
 {phang2}{cmd:. poisson wage education  age , robust  }{p_end}
 {phang2}{cmd:. lhs of test  }{p_end}
