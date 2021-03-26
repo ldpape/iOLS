@@ -116,8 +116,55 @@ Citation to be defined.
 {phang2}{cmd:. gen log_wage = log(wage) }{p_end}
 {phang2}{cmd:. gen employment = wage!=0 }{p_end}
 {phang2}{cmd:. iOLS_OLS wage education age , robust }{p_end}
-{phang2}{cmd:. program iOLS_boostrap, rclass  }{p_end}
-{phang2}{ estimate the model  }{p_end}
+{phang2}{. program iOLS_boostrap, rclass  }{p_end}
+{phang2}{cmd:. iOLS_OLS wage education age , robust  }{p_end}
+{phang2}{cmd:. scalar delta = 1  }{p_end}
+{phang2}{. * lhs of test   }{p_end}
+{phang2}{cmd:. predict xb_temp, xb  }{p_end}
+{phang2}{cmd:. gen u_hat_temp = wage*exp(-xb_temp)  }{p_end}
+{phang2}{cmd:. gen lhs_temp = log(delta+u_hat_temp) - log(delta)  }{p_end}
+{phang2}{. * rhs of test  }{p_end}
+{phang2}{cmd:. gen temp = log(wage + delta*exp(xb_temp)) - xb_temp  }{p_end}
+{phang2}{cmd:. egen c_hat_temp = mean(temp)   }{p_end}
+{phang2}{cmd:. logit employment education age  }{p_end}
+{phang2}{cmd:. predict p_hat_temp, pr  }{p_end}
+{phang2}{cmd:. gen rhs_temp = (c_hat_temp-log(delta))/p_hat_temp  }{p_end}
+{phang2}{. * run the test  }{p_end}
+{phang2}{cmd:. reg lhs_temp rhs_temp if employment, nocons   }{p_end}
+{phang2}{cmd:. matrix b = e(b)  }{p_end}
+{phang2}{cmd:. ereturn post b  }{p_end}
+{phang2}{. * drop created variables  }{p_end}
+{phang2}{cmd:. cap drop *temp  }{p_end}
+{phang2}{cmd:. end  }{p_end}
+
+{phang2}{cmd:. bootstrap lambda = _b[rhs_temp] , reps(50): iOLS_boostrap  }{p_end}
+{phang2}{cmd:. test lambda==1  }{p_end}
+
+
+{phang2}{cmd:. poisson wage education  age , robust  }{p_end}
+
+{phang2}{program Poisson_boostrap, rclass  }{p_end}
+{phang2}{* estimate the model  }{p_end}
+{phang2}{cmd:. poisson wage education  age , robust  }{p_end}
+{phang2}{* lhs of test  }{p_end}
+{phang2}{cmd:. predict xb_temp, xb  }{p_end}
+{phang2}{cmd:. gen u_hat_temp = wage*exp(-xb_temp)  }{p_end}
+{phang2}{cmd:. egen mean_u_temp = mean(u_hat_temp)  }{p_end}
+{phang2}{cmd:. gen lhs_temp = u_hat_temp*exp(-xb_temp)  }{p_end}
+{phang2}{ * rhs of test  }{p_end}
+{phang2}{cmd:. logit employment education age  }{p_end}
+{phang2}{cmd:. predict p_hat_temp, pr  }{p_end}
+{phang2}{cmd:. gen rhs_temp = (mean_u_temp)/p_hat_temp  }{p_end}
+{phang2}{ *run the test  }{p_end}
+{phang2}{cmd:. reg lhs_temp rhs_temp if employment, nocons   }{p_end}
+{phang2}{cmd:. matrix b = e(b)  }{p_end}
+{phang2}{cmd:. ereturn post b  }{p_end}
+{phang2}{* drop created variables  }{p_end}
+{phang2}{cmd:.cap drop *temp  }{p_end}
+{phang2}{cmd:.end  }{p_end}
+
+{phang2}{cmd:. bootstrap lambda = _b[rhs_temp] , reps(50): Poisson_boostrap  }{p_end}
+{phang2}{cmd:. test lambda==1  }{p_end}
 {hline}
 
 {marker results}{...}
