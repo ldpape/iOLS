@@ -107,7 +107,7 @@ Citation to be defined.
 {hline}
 
 
-{pstd} Second, we show how to test for the pattern of zeros using iOLS with delta = 1.
+{pstd} Second, we show how to test for the pattern of zeros with iOLS. We use data on womens' participation into the labor force and look at returns to education.
 {p_end}
 {hline}
 {phang2}{cmd:. clear all}{p_end}
