@@ -1,6 +1,5 @@
-cap program drop iOLS_OLS
 program define iOLS_OLS, rclass
-	syntax [anything] [if] [,  Robust CLuster(varlist numeric)]
+	syntax [anything] [if] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
 
 	if "`cluster'" =="" & "`robust'" =="" {
@@ -15,7 +14,7 @@ program define iOLS_OLS, rclass
 	local option = "`opt1'`opt2'"
 	local list_var `anything'
 	* Remarque : la fct gettoken utilise directement des local variables 
-	* en 2e et 3e argument, donc pas besoin de préciser que ce sont des
+	* en 2e et 3e argument, donc pas besoin de prÃ©ciser que ce sont des
 	* local variable en ajoutant les guillemets stata : `'
 	* get depvar and indepvar
 	gettoken depvar list_var : list_var
@@ -39,7 +38,7 @@ program define iOLS_OLS, rclass
 	matrix beta_new = e(b)
 	local k = 0
 	local eps = 1000	
-	*** Itérations iOLS
+	*** ItÃ©rations iOLS
 	_dots 0
 	while (`k' < 1000 & `eps' > 1e-6) {
 		matrix beta_initial = beta_new
@@ -61,10 +60,10 @@ program define iOLS_OLS, rclass
 		tempname c_hat
 		scalar `c_hat' = `r(mean)'
 		* Update d'un nouveau y_tild et regression avec le nouvel y_tild
-		quietly replace `y_tild' = log(`depvar' + exp(`xb_hat')) - `c_hat'
+		quietly replace `y_tild' = log(`depvar' + `delta' * exp(`xb_hat')) - `c_hat'
 		quietly reg `y_tild' `indepvar' if `touse', `option'
 		matrix beta_new = e(b)
-		* Différence entre les anciens betas et les nouveaux betas
+		* DiffÃ©rence entre les anciens betas et les nouveaux betas
 		matrix diff = beta_initial - beta_new
 		mata : st_matrix("abs_diff", abs(st_matrix("diff")))
 		mata : st_matrix("abs_diff2", st_matrix("abs_diff"):*st_matrix("abs_diff"))
@@ -75,13 +74,13 @@ program define iOLS_OLS, rclass
 	}
 
 	*** Calcul de la bonne matrice de variance-covariance
-	* Calcul du "bon" résidu
+	* Calcul du "bon" rÃ©sidu
 	preserve
 	keep if e(sample)	
 	tempvar xb_hat
 	predict `xb_hat', xb
 	tempvar ui
-	gen `ui' = exp(`y_tild' + `c_hat' - `xb_hat')-1
+	gen `ui' = exp(`y_tild' + `c_hat' - `xb_hat') - `delta'
 	matrix beta_final = e(b)
 	quietly sum if e(sample)
 	tempname nobs
@@ -92,7 +91,7 @@ program define iOLS_OLS, rclass
 	tempvar cste
 	gen `cste' = 1
 	tempvar ui_bis
-	gen `ui_bis' = 1 - 1/(1 + `ui')
+	gen `ui_bis' = 1 - `delta'/(`delta' + `ui')
 	local var_list `indepvar' `cste'
 	mata : X=.
 	mata : IW=.
@@ -107,7 +106,7 @@ program define iOLS_OLS, rclass
 	mata : list_std_err = sqrt(list_Variance)
 	mata : st_matrix("list_std_err", list_std_err)
 
-	*** Stocker les résultats dans une matrice
+	*** Stocker les rÃ©sultats dans une matrice
 	local names : colnames e(b)
 	local nbvar : word count `names'
 	mat result=J(`=`nbvar'+3',3,.) //Defining empty matrix
@@ -124,3 +123,4 @@ program define iOLS_OLS, rclass
 	mat list result
 	restore
 end
+
