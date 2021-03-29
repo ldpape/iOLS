@@ -55,7 +55,7 @@ program define iOLS_OLS, rclass
 		scalar `phi_hat' = log(`r(mean)')
 		* Calcul de c_hat
 		tempvar temp2
-		gen `temp2' = log(`depvar' + exp(`phi_hat' + (`xb_hat' - `cste_hat'))) - (`phi_hat' + (`xb_hat' - `cste_hat'))
+		gen `temp2' = log(`depvar' + `delta'*exp(`phi_hat' + (`xb_hat' - `cste_hat'))) - (`phi_hat' + (`xb_hat' - `cste_hat'))
 		quietly sum `temp2' if e(sample)
 		tempname c_hat
 		scalar `c_hat' = `r(mean)'
@@ -115,7 +115,7 @@ program define iOLS_OLS, rclass
 	forv n=1/`nbvar' {
 		mat result[`n',1] = beta_final[1,`n']
 		mat result[`n',2] = list_std_err[`n',1]
-		mat result[`n',3] = sqrt(Sigma[`n',`n'])*2
+		mat result[`n',3] = sqrt(Sigma[`n',`n'])*(1+`delta')
 	}
 	mat result[`=`nbvar'+1',1] = `nobs'
 	mat result[`=`nbvar'+2',1] = `k'
