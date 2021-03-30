@@ -1,7 +1,7 @@
 program define iOLS_OLS, eclass 
 	syntax [anything] [if] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
-        markout `touse'  `cluster', s                                                                                  // Defines observations to use
+        markout `touse'  `cluster', s                                                               // Defines observations to use (from PPML code)
 
 	if "`cluster'" =="" & "`robust'" =="" {
 		di as error "Standard errors should be robust to heteroskedasticity using option robust or cluster" 
@@ -56,7 +56,7 @@ program define iOLS_OLS, eclass
 		scalar `phi_hat' = log(`r(mean)')
 		* Calcul de c_hat
 		tempvar temp2
-		gen `temp2' = log(`depvar' + `delta'*exp(`phi_hat' + (`xb_hat' - `cste_hat'))) - (`phi_hat' + (`xb_hat' - `cste_hat'))
+		gen `temp2' = log(`depvar' + `delta'*exp(`phi_hat' + (`xb_hat' - `cste_hat'))) - (`phi_hat' + (`xb_hat' - `cste_hat'))  // missing delta here
 		quietly sum `temp2' if e(sample)
 		tempname c_hat
 		scalar `c_hat' = `r(mean)'
@@ -116,7 +116,7 @@ program define iOLS_OLS, eclass
 	forv n=1/`nbvar' {
 		mat result[`n',1] = beta_final[1,`n']
 		mat result[`n',2] = list_std_err[`n',1]
-		mat result[`n',3] = sqrt(Sigma[`n',`n'])*(1+`delta')
+		mat result[`n',3] = sqrt(Sigma[`n',`n'])*(1+`delta') // adapted for delta case
 	}
 	mat result[`=`nbvar'+1',1] = `nobs'
 	mat result[`=`nbvar'+2',1] = `k'
@@ -127,7 +127,6 @@ ereturn clear                                                                   
  ereturn post , esample(`touse') 
  ereturn scalar delta = `delta'                                                                       // List of included regressors
  ereturn local cmd "iOLS"   // Post cmd on e 
- exit
 	restore
 end
 
