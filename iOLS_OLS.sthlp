@@ -57,9 +57,6 @@ as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego
 This provides the reader with the final OLS estimates and allows the use the post-estimation commands available under regress (using Y_tilde = log(Y + delta*exp(xb))) as a 
 dependent variable.  The benefit of using "regress" comes at the cost of limited capacity to deal with many fixed effects. In such a case, iOLS_hdfe may be more appropriate.
 
-{marker absvar}{...}
-{title:Syntax for absorbed variables}
-
 {synoptset 22}{...}
 {synopthdr: variables}
 {synoptline}
@@ -73,7 +70,6 @@ dependent variable.  The benefit of using "regress" comes at the cost of limited
 {title:Caveats}
 
 {pstd} Convergence is decided based on coefficients (sum of squared coefficients < 1e-6) and not on the modulus of the contraction mapping.
-
 
 {pstd}The {help test} postestimation commands are available after {cmd:iOLS_OLS}.  This command yields 'xb' using "predict xb, xb" . To obtain y_hat, you will need to also run "gen y_hat = exp(xb)".
 
