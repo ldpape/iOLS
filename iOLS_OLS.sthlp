@@ -29,13 +29,11 @@
 {synoptset 22 tabbed}{...}
 {synopthdr}
 {synoptline}
-{syntab:SE: Robust/Cluster}
+{syntab:SE: Classical/Robust/Cluster}
 {synopt:{opt}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}}{it:vcetype}
 may be {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering){p_end}
 {syntab:Delta}
-{synopt:}{it:delta} is any strictly positive constant. {p_end}
-
-
+{synopt:}{opt:del:ta} is any strictly positive constant. {p_end}
 
 {marker description}{...}
 {title:Description}
