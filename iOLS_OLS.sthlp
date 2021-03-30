@@ -102,7 +102,7 @@ Citation to be defined.
 {hline}
 {phang2}{cmd:. use "http://www.stata-press.com/data/r14/airline"}{p_end}
 {phang2}{cmd:. iOLS_OLS injuries XYZowned, delta(1) robust}{p_end}
-{phang2}{cmd:. poisson injuries XYZowned, rosut}{p_end}
+{phang2}{cmd:. poisson injuries XYZowned, robust}{p_end}
 {hline}
 
 
@@ -116,6 +116,7 @@ Citation to be defined.
 {phang2}{cmd:. gen employment = wage!=0 }{p_end}
 
 {phang2}{cmd:. iOLS_OLS wage education age , delta(1) robust }{p_end}
+
 {phang2}{cmd:. cap program drop iOLS_bootstrap  }{p_end}
 {phang2}{cmd:. program iOLS_bootstrap, rclass  }{p_end}
 {phang2}{cmd:. iOLS_OLS wage education age , delta(1) robust  }{p_end}
@@ -138,7 +139,7 @@ Citation to be defined.
 {phang2}{cmd:. cap drop *temp  }{p_end}
 {phang2}{cmd:. end  }{p_end}
 
-{phang2}{cmd:. bootstrap lambda = _b[rhs_temp] , reps(50): iOLS_boostrap  }{p_end}
+{phang2}{cmd:. bootstrap lambda = _b[rhs_temp] , reps(50): iOLS_bootstrap  }{p_end}
 {phang2}{cmd:. test lambda==1  }{p_end}
 {hline}
 
@@ -168,7 +169,7 @@ Citation to be defined.
 {phang2}{cmd:. cap drop *temp  }{p_end}
 {phang2}{cmd:. end  }{p_end}
 
-{phang2}{cmd:. bootstrap lambda = _b[rhs_temp] , reps(50): Poisson_boostrap  }{p_end}
+{phang2}{cmd:. bootstrap lambda = _b[rhs_temp] , reps(50): Poisson_bootstrap  }{p_end}
 {phang2}{cmd:. test lambda==1  }{p_end}
 {hline}
 
