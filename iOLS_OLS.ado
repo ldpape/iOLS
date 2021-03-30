@@ -34,7 +34,7 @@ program define iOLS_OLS, eclass
 	
 	*** Initialisation de la boucle
 	tempvar y_tild 
-	gen `y_tild' = log(`depvar' + 1)
+	quietly gen `y_tild' = log(`depvar' + 1)
 	quietly reg `y_tild' `indepvar' if `touse', `option'
 	matrix beta_new = e(b)
 	local k = 0
@@ -45,7 +45,7 @@ program define iOLS_OLS, eclass
 		matrix beta_initial = beta_new
 		* Nouveaux beta
 		tempvar xb_hat
-		predict `xb_hat', xb
+		quietly predict `xb_hat', xb
 		tempname cste_hat
 		scalar `cste_hat' = _b[_cons]
 		* Calcul de phi_hat
@@ -79,7 +79,7 @@ program define iOLS_OLS, eclass
 	preserve
 	keep if e(sample)	
 	tempvar xb_hat
-	predict `xb_hat', xb
+	quietly predict `xb_hat', xb
 	tempvar ui
 	gen `ui' = exp(`y_tild' + `c_hat' - `xb_hat') - `delta'
 	matrix beta_final = e(b)
@@ -92,7 +92,7 @@ program define iOLS_OLS, eclass
 	tempvar cste
 	gen `cste' = 1
 	tempvar ui_bis
-	gen `ui_bis' = 1 - `delta'/(`delta' + `ui')
+	quietly gen `ui_bis' = 1 - `delta'/(`delta' + `ui')
 	local var_list `indepvar' `cste'
 	mata : X=.
 	mata : IW=.
@@ -123,9 +123,8 @@ program define iOLS_OLS, eclass
 	mat result[`=`nbvar'+3',1] = `eps'
 	*mat list result
     ereturn post `beta_final' `list_std_err', esample(`touse') buildfvinfo
-    ereturn scalar N       = `N'
-    ereturn local  cmd     "delta"
- 
+    *ereturn scalar N       = `N'
+    *ereturn local  cmd     "delta"
     ereturn display
 	
 	restore
