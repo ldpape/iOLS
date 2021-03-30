@@ -122,10 +122,10 @@ program define iOLS_OLS, eclass
 	mat result[`=`nbvar'+2',1] = `k'
 	mat result[`=`nbvar'+3',1] = `eps'
 	*mat list result
-    ereturn post `beta_final' `list_std_err', esample(`touse') buildfvinfo
-    *ereturn scalar N       = `N'
-    *ereturn local  cmd     "delta"
-    ereturn display
+ereturn post ‘beta_final’ ‘list_std_err’, obs(‘N’) depname(‘names’) esample(‘touse’)
+ereturn local depvar "‘depvar’"
+
+ereturn display, level(‘Estimation using iOLS’)
 	
 	restore
 end
