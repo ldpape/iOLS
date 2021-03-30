@@ -106,6 +106,7 @@ program define iOLS_OLS, eclass
 	mata : list_Variance = diagonal(Sigma_tild)
 	mata : list_std_err = sqrt(list_Variance)
 	mata : st_matrix("list_std_err", list_std_err)
+	mata : st_matrix("list_std_err", V)
 
 	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
@@ -122,7 +123,7 @@ program define iOLS_OLS, eclass
 	mat result[`=`nbvar'+2',1] = `k'
 	mat result[`=`nbvar'+3',1] = `eps'
 	*mat list result
-ereturn post `beta_final' `list_std_err', obs(`N') depname(`names') esample(`touse')
+ereturn post `beta_new' `list_std_err', obs(`nobs') depname(`names') esample(`touse')
 ereturn local depvar "`depvar'"
 
 ereturn display, level(‘Estimation using iOLS’)
