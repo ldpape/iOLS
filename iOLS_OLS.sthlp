@@ -41,6 +41,8 @@ may be {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering)
 {pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares with delta.
 as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego, Benatia, and Pape (2021)}.
 
+
+
 {pstd} This package:
 
 {pmore} 1. relies on Stata's OLS reg procedure for estimation.{p_end}
@@ -50,7 +52,10 @@ as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego
 
 {title:Background}
 
-{pstd} iOLS_delta is a solution to the problem of the log of zero.
+{pstd}
+{cmd: iOLS_OLS} estimates iOLS_delta, a solution to the problem of the log of zero.  This method relies on running the "regress" function iteratively.
+This provides the reader with the final OLS estimates and allows the use the post-estimation commands available under regress (using Y_tilde = log(Y + delta*exp(xb))) as a 
+dependent variable.  The benefit of using "regress" comes at the cost of limited capacity to deal with many fixed effects. In such a case, iOLS_hdfe may be more appropriate.
 
 {marker absvar}{...}
 {title:Syntax for absorbed variables}
