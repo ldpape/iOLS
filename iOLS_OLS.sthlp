@@ -15,7 +15,7 @@
 {title:Title}
 
 {p2colset 5 18 20 2}{...}
-{p2col :{cmd:iOLS_OLS} {hline 2}}Iterated Ordinary Least Squares (iOLS) {p_end}
+{p2col :{cmd:iOLS_OLS} {hline 2}}Iterated Ordinary Least Squares (iOLS) with delta {p_end}
 {p2colreset}{...}
 
 {marker syntax}{...}
@@ -40,20 +40,19 @@ may be {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering)
 {marker description}{...}
 {title:Description}
 
-{pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares with delta = 1.
+{pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares with delta.
 as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego, Benatia, and Pape (2021)}.
 
-{pstd}This package:
+{pstd} This package:
 
-{pmore} 1. relies on Stata's OLS procedure for estimation.{p_end}
+{pmore} 1. relies on Stata's OLS reg procedure for estimation.{p_end}
 
-{pmore} 2. assumes the iOLS exogeneity condition with delta = 1. {p_end}
+{pmore} 2. assumes the iOLS exogeneity condition with delta E(X'log(delta+U)) = constant. {p_end}
 
 
 {title:Background}
 
-{pstd} iOLS_delta is a solution to the problem of the log of zero.  The parameter associated with a log-transformed dependent variable can be interpreted as an elasticity. 
-
+{pstd} iOLS_delta is a solution to the problem of the log of zero.
 
 {marker absvar}{...}
 {title:Syntax for absorbed variables}
@@ -70,7 +69,7 @@ as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego
 {marker caveats}{...}
 {title:Caveats}
 
-{pstd} Convergence is decided based on coefficients and not on the modulus of the contraction mapping.
+{pstd} Convergence is decided based on coefficients (sum of squared coefficients < 1e-6) and not on the modulus of the contraction mapping.
 
 
 {pstd}The {help test} postestimation commands are available after {cmd:iOLS_OLS}.  This command yields 'xb' using "predict xb, xb" . To obtain y_hat, you will need to also run "gen y_hat = exp(xb)".
@@ -102,7 +101,7 @@ Citation to be defined.
 {p_end}
 {hline}
 {phang2}{cmd:. use "http://www.stata-press.com/data/r14/airline"}{p_end}
-{phang2}{cmd:. iOLS_OLS injuries XYZowned, robust}{p_end}
+{phang2}{cmd:. iOLS_OLS injuries XYZowned, delta(1) robust}{p_end}
 {phang2}{cmd:. poisson injuries XYZowned, rosut}{p_end}
 {hline}
 
@@ -116,10 +115,10 @@ Citation to be defined.
 {phang2}{cmd:. gen log_wage = log(wage) }{p_end}
 {phang2}{cmd:. gen employment = wage!=0 }{p_end}
 
-{phang2}{cmd:. iOLS_OLS wage education age , robust }{p_end}
+{phang2}{cmd:. iOLS_OLS wage education age , delta(1) robust }{p_end}
 {phang2}{cmd:. cap program drop iOLS_bootstrap  }{p_end}
 {phang2}{cmd:. program iOLS_bootstrap, rclass  }{p_end}
-{phang2}{cmd:. iOLS_OLS wage education age , robust  }{p_end}
+{phang2}{cmd:. iOLS_OLS wage education age , delta(1) robust  }{p_end}
 {phang2}{cmd:. scalar delta = 1  }{p_end}
 {phang2}{cmd:. *lhs of test  }{p_end}
 {phang2}{cmd:. predict xb_temp, xb  }{p_end}
@@ -174,7 +173,7 @@ Citation to be defined.
 {hline}
 
 
-{pstd} Fourth, you can convert your results into latex using esttab:
+{pstd} Fourth, you can convert your results into latex using esttab where "eps" provides the convergence criteria:
 {p_end}
 {hline}
 {phang2}{cmd:. eststo clear}{p_end}
@@ -192,3 +191,7 @@ Citation to be defined.
 {synoptset 24 tabbed}{...}
 {syntab:Scalars}
 {synopt:{cmd:e(N)}}number of observations{p_end}
+{synopt:{cmd:e(sample)}} marks the sample used for estimation {p_end}
+{synopt:{cmd:e(eps)}} sum of the absolute differences between the parameters from the last two iterations of iOLS {p_end}
+{synopt:{cmd:e(k)}} number of iterations of iOLS{p_end}
+
