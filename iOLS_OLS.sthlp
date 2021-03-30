@@ -117,8 +117,8 @@ Citation to be defined.
 {phang2}{cmd:. gen employment = wage!=0 }{p_end}
 
 {phang2}{cmd:. iOLS_OLS wage education age , robust }{p_end}
-
-{phang2}{cmd:. program iOLS_boostrap, rclass  }{p_end}
+{phang2}{cmd:. cap program drop iOLS_bootstrap  }{p_end}
+{phang2}{cmd:. program iOLS_bootstrap, rclass  }{p_end}
 {phang2}{cmd:. iOLS_OLS wage education age , robust  }{p_end}
 {phang2}{cmd:. scalar delta = 1  }{p_end}
 {phang2}{cmd:. *lhs of test  }{p_end}
@@ -148,7 +148,8 @@ Citation to be defined.
 {hline}
 {phang2}{cmd:. poisson wage education  age , robust  }{p_end}
 
-{phang2}{cmd:. program Poisson_boostrap, rclass  }{p_end}
+{phang2}{cmd:. cap program drop Poisson_bootstrap }{p_end}
+{phang2}{cmd:. program Poisson_bootstrap, rclass  }{p_end}
 {phang2}{cmd:. estimate the model  }{p_end}
 {phang2}{cmd:. poisson wage education  age , robust  }{p_end}
 {phang2}{cmd:. lhs of test  }{p_end}
