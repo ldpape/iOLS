@@ -122,11 +122,6 @@ program define iOLS_OLS, eclass
 	mat result[`=`nbvar'+2',1] = `k'
 	mat result[`=`nbvar'+3',1] = `eps'
 	mat list result
-	
-ereturn clear                                                                                         // List of scalars to return to user
- ereturn post , esample(`touse') 
- ereturn scalar delta = `delta'                                                                       // List of included regressors
- ereturn local cmd "iOLS"   // Post cmd on e 
 	restore
 end
 
