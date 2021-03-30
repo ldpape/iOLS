@@ -77,9 +77,9 @@ dependent variable.  The benefit of using "regress" comes at the cost of limited
 {marker contact}{...}
 {title:Authors}
 
-{pstd}Louis Pape {break}
+{pstd} Author {break}
 CREST {break}
-Email: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.edu}
+Email: {browse "mailto:author@email.edu":author@email.edu}
 {p_end}
 
 
