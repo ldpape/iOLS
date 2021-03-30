@@ -121,7 +121,15 @@ program define iOLS_OLS, eclass
 	mat result[`=`nbvar'+1',1] = `nobs'
 	mat result[`=`nbvar'+2',1] = `k'
 	mat result[`=`nbvar'+3',1] = `eps'
-	mat list result
+	*mat list result
+    ereturn post `b' `V', esample(`touse') buildfvinfo
+    ereturn scalar N       = `N'
+    ereturn scalar rank    = `rank'
+    ereturn scalar df_r    = `df_r'
+    ereturn local  cmd     "delta"
+ 
+    ereturn display
+	
 	restore
 end
 
