@@ -1,8 +1,6 @@
 program define iOLS_OLS, eclass 
 	syntax [anything] [if] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
-        markout `touse'  `cluster', s                                                               // Defines observations to use (from PPML code)
-
 	if "`cluster'" =="" & "`robust'" =="" {
 		di as error "Standard errors should be robust to heteroskedasticity using option robust or cluster" 
 	}
@@ -86,7 +84,7 @@ program define iOLS_OLS, eclass
 	quietly sum if e(sample)
 	tempname nobs
 	scalar  `nobs' = r(N)
-	di `nobs'
+	*di `nobs'
 	* Calcul de Sigma_0, de I-W et de Sigma_tild
 	matrix Sigma = e(V)
 	tempvar cste
@@ -106,27 +104,38 @@ program define iOLS_OLS, eclass
 	mata : list_Variance = diagonal(Sigma_tild)
 	mata : list_std_err = sqrt(list_Variance)
 	mata : st_matrix("list_std_err", list_std_err)
-
+    mata: st_matrix("Sigma_tild", Sigma_tild)
 	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
 	local nbvar : word count `names'
-	mat result=J(`=`nbvar'+3',3,.) //Defining empty matrix
-	mat rownames result = `names' "nobs" "niter" "criteria"
-	mat colnames result = "Beta" "Std.Er." "Std.Er.Approx."
-	forv n=1/`nbvar' {
-		mat result[`n',1] = beta_final[1,`n']
-		mat result[`n',2] = list_std_err[`n',1]
-		mat result[`n',3] = sqrt(Sigma[`n',`n'])*(1+`delta') // adapted for delta case
-	}
-	mat result[`=`nbvar'+1',1] = `nobs'
-	mat result[`=`nbvar'+2',1] = `k'
-	mat result[`=`nbvar'+3',1] = `eps'
-	*mat list result
-ereturn post `beta_new' `list_std_err', obs(`nobs') depname(`names') esample(`touse')
-ereturn local depvar "`depvar'"
-
-ereturn display, level(‘Estimation using iOLS’)
 	
-	restore
+******************************************************************************
+* Return the information to STATA output
+******************************************************************************
+// You can use this to check if ereturn is working well or not.
+*	mat result=J(`=`nbvar'+3',3,.) //Defining empty matrix
+*	mat rownames result = `names' "nobs" "niter" "criteria"
+*	mat colnames result = "Beta" "Std.Er." "Std.Er.Approx."
+*	forv n=1/`nbvar' {
+*		mat result[`n',1] = beta_final[1,`n']
+*		mat result[`n',2] = list_std_err[`n',1]
+*		mat result[`n',3] = sqrt(Sigma[`n',`n'])*(1+`delta') // adapted for delta case
+*	}
+*	mat result[`=`nbvar'+1',1] = `nobs'
+*	mat result[`=`nbvar'+2',1] = `k'
+*	mat result[`=`nbvar'+3',1] = `eps'
+*	mat list result
+
+* You need to tell stata what the column / row names are for your covariance matrix 
+	mat rownames Sigma_tild = `names' 
+    mat colnames Sigma_tild = `names' 
+	restore 
+ereturn scalar delta = `delta'
+ereturn  scalar eps =   `eps'
+ereturn  scalar niter =  `k'
+ereturn local cmd "iOLS"
+ereturn local vcetype `option'
+ereturn post beta_final Sigma_tild , obs(`=r(N)') depname(`depvar') esample(`touse')  dof(`=r(df r)') 
+ereturn display
 end
 
