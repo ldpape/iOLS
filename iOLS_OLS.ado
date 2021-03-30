@@ -106,7 +106,6 @@ program define iOLS_OLS, eclass
 	mata : list_Variance = diagonal(Sigma_tild)
 	mata : list_std_err = sqrt(list_Variance)
 	mata : st_matrix("list_std_err", list_std_err)
-	mata : st_matrix("list_std_err", V)
 
 	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
