@@ -1,4 +1,4 @@
-program define iOLS_OLS, rclass
+program define iOLS_OLS, eclass 
 	syntax [anything] [if] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
         markout `touse'  `cluster', s                                                                                  // Defines observations to use
