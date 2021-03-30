@@ -129,13 +129,13 @@ program define iOLS_OLS, eclass
 * You need to tell stata what the column / row names are for your covariance matrix 
 	mat rownames Sigma_tild = `names' 
     mat colnames Sigma_tild = `names' 
+    ereturn post beta_final Sigma_tild , obs(`=r(N)') depname(`depvar') esample(`touse')  dof(`=r(df r)') 
 	restore 
 ereturn scalar delta = `delta'
 ereturn  scalar eps =   `eps'
 ereturn  scalar niter =  `k'
 ereturn local cmd "iOLS"
 ereturn local vcetype `option'
-ereturn post beta_final Sigma_tild , obs(`=r(N)') depname(`depvar') esample(`touse')  dof(`=r(df r)') 
 ereturn display
 end
 
