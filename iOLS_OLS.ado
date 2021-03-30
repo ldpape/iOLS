@@ -107,7 +107,7 @@ program define iOLS_OLS, eclass
 	mata : list_std_err = sqrt(list_Variance)
 	mata : st_matrix("list_std_err", list_std_err)
 
-	*** Stocker les rÃ©sultats dans une matrice
+	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
 	local nbvar : word count `names'
 	mat result=J(`=`nbvar'+3',3,.) //Defining empty matrix
@@ -122,10 +122,8 @@ program define iOLS_OLS, eclass
 	mat result[`=`nbvar'+2',1] = `k'
 	mat result[`=`nbvar'+3',1] = `eps'
 	*mat list result
-    ereturn post `b' `V', esample(`touse') buildfvinfo
+    ereturn post `beta_final' `list_std_err', esample(`touse') buildfvinfo
     ereturn scalar N       = `N'
-    ereturn scalar rank    = `rank'
-    ereturn scalar df_r    = `df_r'
     ereturn local  cmd     "delta"
  
     ereturn display
