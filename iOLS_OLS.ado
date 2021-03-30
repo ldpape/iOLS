@@ -125,7 +125,8 @@ program define iOLS_OLS, rclass
 	 ereturn clear
  ereturn post , esample(`touse') 
  ereturn scalar delta = `delta'                                                                       // List of included regressors
- ereturn local cmd "iOLS"                                                                                      // Post cmd on e 
+ ereturn local cmd "iOLS"   // Post cmd on e 
+ exit
 	restore
 end
 
