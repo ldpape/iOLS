@@ -172,6 +172,16 @@ Citation to be defined.
 {phang2}{cmd:. test lambda==1  }{p_end}
 {hline}
 
+
+{pstd} Fourth, you can convert your results into latex using esttab:
+{p_end}
+{hline}
+{phang2}{cmd:. eststo clear}{p_end}
+{phang2}{cmd:. eststo: iOLS_OLS wage education age , delta(1) robust }{p_end}
+{phang2}{cmd:. eststo: iOLS_OLS wage education age , delta(10) robust }{p_end}
+{phang2}{cmd:. eststo: esttab * using table.tex,  scalars(delta eps) }{p_end}
+{hline}
+
 {marker results}{...}
 {title:Stored results}
 
