@@ -1,6 +1,7 @@
 program define iOLS_OLS, rclass
 	syntax [anything] [if] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
+        markout `touse'  `cluster', s                                                                                  // Defines observations to use
 
 	if "`cluster'" =="" & "`robust'" =="" {
 		di as error "Standard errors should be robust to heteroskedasticity using option robust or cluster" 
