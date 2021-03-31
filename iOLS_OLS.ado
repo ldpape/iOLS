@@ -1,5 +1,5 @@
 program define iOLS_OLS, eclass 
-	syntax [anything] [if] [, DELta(real 1) Robust CLuster(varlist numeric)]
+	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
 	if "`cluster'" =="" & "`robust'" =="" {
 		di as error "Standard errors should be robust to heteroskedasticity using option robust or cluster" 
@@ -33,7 +33,7 @@ program define iOLS_OLS, eclass
 	*** Initialisation de la boucle
 	tempvar y_tild 
 	quietly gen `y_tild' = log(`depvar' + 1)
-	quietly reg `y_tild' `indepvar' if `touse', `option'
+	quietly reg `y_tild' `indepvar' if `touse' [`weight'`exp'], `option'
 	matrix beta_new = e(b)
 	local k = 0
 	local eps = 1000	
@@ -49,18 +49,18 @@ program define iOLS_OLS, eclass
 		* Calcul de phi_hat
 		tempvar temp1
 		gen `temp1' = `depvar' * exp(-(`xb_hat' - `cste_hat'))
-		quietly sum `temp1' if e(sample)
+		quietly sum `temp1' [`weight'`exp'] if e(sample) 
 		tempname phi_hat
 		scalar `phi_hat' = log(`r(mean)')
 		* Calcul de c_hat
 		tempvar temp2
 		gen `temp2' = log(`depvar' + `delta'*exp(`phi_hat' + (`xb_hat' - `cste_hat'))) - (`phi_hat' + (`xb_hat' - `cste_hat'))  // missing delta here
-		quietly sum `temp2' if e(sample)
+		quietly sum `temp2' [`weight'`exp'] if e(sample)
 		tempname c_hat
 		scalar `c_hat' = `r(mean)'
 		* Update d'un nouveau y_tild et regression avec le nouvel y_tild
 		quietly replace `y_tild' = log(`depvar' + `delta' * exp(`xb_hat')) - `c_hat'
-		quietly reg `y_tild' `indepvar' if `touse', `option'
+		quietly reg `y_tild' `indepvar' if `touse' [`weight'`exp'], `option'
 		matrix beta_new = e(b)
 		* DiffÃ©rence entre les anciens betas et les nouveaux betas
 		matrix diff = beta_initial - beta_new
@@ -81,7 +81,7 @@ program define iOLS_OLS, eclass
 	tempvar ui
 	gen `ui' = exp(`y_tild' + `c_hat' - `xb_hat') - `delta'
 	matrix beta_final = e(b)
-	quietly sum if e(sample)
+	quietly sum [`weight'`exp'] if e(sample)
 	tempname nobs
 	scalar  `nobs' = r(N)
 	*di `nobs'
