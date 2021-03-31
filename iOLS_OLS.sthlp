@@ -12,6 +12,7 @@
 {viewerjumpto "Examples" "iOLS_OLS##examples"}{...}
 {viewerjumpto "Description" "iOLS_OLS##Testing"}{...}
 {viewerjumpto "Stored results" "iOLS_OLS##results"}{...}
+
 {title:Title}
 
 {p2colset 5 18 20 2}{...}
@@ -41,9 +42,7 @@ may be classical (assuming homoskedasticity), {opt r:obust}, or {opt cl:uster} (
 {pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares with delta, as described by {browse "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3444996":Bellego, Benatia, and Pape (2021)}.
 
 {pstd} This package:
-
 {pmore} 1. relies on Stata's OLS reg procedure for estimation.{p_end}
-
 {pmore} 2. assumes the iOLS exogeneity condition with delta E(X'log(delta+U)) = constant. {p_end}
 
 
@@ -65,11 +64,8 @@ dependent variable.  The benefit of using "regress" comes at the cost of limited
 
 {marker caveats}{...}
 {title:Caveats}
-
 {pstd} Convergence is decided based on coefficients (sum of squared coefficients < 1e-6) and not on the modulus of the contraction mapping.
-
 {pstd}The {help test} postestimation commands are available after {cmd:iOLS_OLS}.  This command yields 'xb' using "predict xb, xb" . To obtain y_hat, you will need to also run "gen y_hat = exp(xb)".
-
 
 {marker contact}{...}
 {title:Authors}
@@ -79,7 +75,6 @@ CREST - ENSAE - HEC Montréal - Ecole Polytechnique {break}
 Contact: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.edu}
 {p_end}
 
-
 {marker citation}{...}
 {title:Citation}
 
@@ -87,7 +82,6 @@ Contact: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.
 Bellégo Christophe, Benatia David, and Pape Louis-Daniel, Dealing with Logs and Zeros in Regression Models (2019).
 Série des Documents de Travail n° 2019-13.
 Available at SSRN: https://ssrn.com/abstract=3444996
-
 
 {marker examples}{...}
 {title:Examples}
@@ -100,7 +94,6 @@ Available at SSRN: https://ssrn.com/abstract=3444996
 {phang2}{cmd:. iOLS_OLS injuries XYZowned, delta(1) robust}{p_end}
 {phang2}{cmd:. poisson injuries XYZowned, robust}{p_end}
 {hline}
-
 
 {pstd} Second, we show how to test for the pattern of zeros with iOLS. We use data on womens' participation into the labor force and look at returns to education.
 {p_end}
@@ -168,7 +161,6 @@ Available at SSRN: https://ssrn.com/abstract=3444996
 {phang2}{cmd:. bootstrap lambda = _b[rhs_temp] , reps(50): Poisson_bootstrap  }{p_end}
 {phang2}{cmd:. test lambda==1  }{p_end}
 {hline}
-
 
 {pstd} Fourth, you can convert your results into latex using esttab where "eps" provides the convergence criteria:
 {p_end}
