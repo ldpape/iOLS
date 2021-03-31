@@ -76,7 +76,7 @@ dependent variable.  The benefit of using "regress" comes at the cost of limited
 
 {pstd} Christophe Bellego, David Benatia, Louis Pape {break}
 CREST - ENSAE - HEC Montréal - Ecole Polytechnique {break}
-Email: {browse "mailto:author@email.edu":author@email.edu}
+Contact: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.edu}
 {p_end}
 
 
