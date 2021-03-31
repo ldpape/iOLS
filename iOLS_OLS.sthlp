@@ -42,7 +42,9 @@ may be classical (assuming homoskedasticity), {opt r:obust}, or {opt cl:uster} (
 {pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares with delta, as described by {browse "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3444996":Bellego, Benatia, and Pape (2021)}.
 
 {pstd} This package:
-{pmore} 1. relies on Stata's OLS reg procedure for estimation.{p_end}
+
+{pmore} 1. relies on Stata's OLS reg procedure for estimation. {p_end}
+
 {pmore} 2. assumes the iOLS exogeneity condition with delta E(X'log(delta+U)) = constant. {p_end}
 
 
