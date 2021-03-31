@@ -77,8 +77,8 @@ dependent variable.  The benefit of using "regress" comes at the cost of limited
 {marker contact}{...}
 {title:Authors}
 
-{pstd} Author {break}
-CREST {break}
+{pstd} Christophe Bellego, David Benatia, Louis Pape {break}
+CREST - ENSAE - HEC Montréal - Ecole Polytechnique {break}
 Email: {browse "mailto:author@email.edu":author@email.edu}
 {p_end}
 
@@ -89,7 +89,7 @@ Email: {browse "mailto:author@email.edu":author@email.edu}
 {title:Citation}
 
 {pstd}
-Citation to be defined. 
+Bellégo Christophe, Benatia David, and Pape Louis-Daniel, Dealing with Logs and Zeros in Regression Models (August 28, 2019). Série des Documents de Travail n° 2019-13, Available at SSRN: https://ssrn.com/abstract=3444996 or http://dx.doi.org/10.2139/ssrn.3444996
 
 
 {marker examples}{...}
@@ -190,7 +190,7 @@ Citation to be defined.
 
 {synoptset 24 tabbed}{...}
 {syntab:Scalars}
-{synopt:{cmd:e(N)}}number of observations{p_end}
+{synopt:{cmd:e(N)}} number of observations{p_end}
 {synopt:{cmd:e(sample)}} marks the sample used for estimation {p_end}
 {synopt:{cmd:e(eps)}} sum of the absolute differences between the parameters from the last two iterations of iOLS {p_end}
 {synopt:{cmd:e(k)}} number of iterations of iOLS{p_end}
