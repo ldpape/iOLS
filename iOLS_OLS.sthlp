@@ -84,9 +84,9 @@ Contact: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.
 {title:Citation}
 
 {pstd}
-Bellégo Christophe, Benatia David, and Pape Louis-Daniel, Dealing with Logs and Zeros in Regression Models (August 28, 2019).
+Bellégo Christophe, Benatia David, and Pape Louis-Daniel, Dealing with Logs and Zeros in Regression Models (2019).
 Série des Documents de Travail n° 2019-13.
-Available at SSRN: https://ssrn.com/abstract=3444996 or http://dx.doi.org/10.2139/ssrn.3444996
+Available at SSRN: https://ssrn.com/abstract=3444996
 
 
 {marker examples}{...}
