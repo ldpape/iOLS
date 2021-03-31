@@ -74,8 +74,7 @@ dependent variable.  The benefit of using "regress" comes at the cost of limited
 
 {pstd} Christophe Bellego, David Benatia, Louis Pape {break}
 CREST - ENSAE - HEC Montréal - Ecole Polytechnique {break}
-Contact: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.edu}
-{p_end}
+Contact: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.edu} {p_end}
 
 {marker citation}{...}
 {title:Citation}
@@ -83,7 +82,7 @@ Contact: {browse "mailto:louis.pape@polytechnique.edu":louis.pape@polytechnique.
 {pstd}
 Bellégo Christophe, Benatia David, and Pape Louis-Daniel, Dealing with Logs and Zeros in Regression Models (2019).
 Série des Documents de Travail n° 2019-13.
-Available at SSRN: https://ssrn.com/abstract=3444996
+Available at SSRN: https://ssrn.com/abstract=3444996 
 
 {marker examples}{...}
 {title:Examples}
