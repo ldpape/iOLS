@@ -16,7 +16,7 @@
 {title:Title}
 
 {p2colset 5 18 20 2}{...}
-{p2col :{cmd:iOLS_OLS} {hline 2}}Iterated Ordinary Least Squares (iOLS) with delta {p_end}
+{p2col :{cmd:iOLS_OLS} {hline 2}} Iterated Ordinary Least Squares (iOLS) with delta {p_end}
 {p2colreset}{...}
 
 {marker syntax}{...}
@@ -66,8 +66,10 @@ dependent variable.  The benefit of using "regress" comes at the cost of limited
 
 {marker caveats}{...}
 {title:Caveats}
+
 {pstd} Convergence is decided based on coefficients (sum of squared coefficients < 1e-6) and not on the modulus of the contraction mapping.
-{pstd}The {help test} postestimation commands are available after {cmd:iOLS_OLS}.  This command yields 'xb' using "predict xb, xb" . To obtain y_hat, you will need to also run "gen y_hat = exp(xb)".
+
+{pstd} The {help test} postestimation commands are available after {cmd:iOLS_OLS}.  This command yields 'xb' using "predict xb, xb" . To obtain y_hat, you will need to also run "gen y_hat = exp(xb)".
 
 {marker contact}{...}
 {title:Authors}
