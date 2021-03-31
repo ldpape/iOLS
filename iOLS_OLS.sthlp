@@ -30,7 +30,7 @@
 {synopthdr}
 {synoptline}
 {syntab: Standard Errors: Classical/Robust/Clustered}
-{synopt:{opt}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}}{it:vcetype}
+{synopt:{opt vce}{cmd:(}{help iOLS_OLS##opt_vce:vcetype}{cmd:)}}{it:vcetype}
 may be classical (assuming homoskedasticity), {opt r:obust}, or {opt cl:uster} (allowing two- and multi-way clustering){p_end}
 {syntab: Delta}
 {synopt:{opt}{cmd:(}{help iOLS_OLS##delta:delta}{cmd:)}}{it:delta} is any strictly positive constant. {p_end}
