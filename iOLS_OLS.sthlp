@@ -38,8 +38,7 @@ may be classical (assuming homoskedasticity), {opt r:obust}, or {opt cl:uster} (
 {marker description}{...}
 {title:Description}
 
-{pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares with delta.
-as described by {browse "https://sites.google.com/site/louisdanielpape/":Bellego, Benatia, and Pape (2021)}.
+{pstd}{cmd:iOLS_OLS} iterated Ordinary Least Squares with delta, as described by {browse "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3444996":Bellego, Benatia, and Pape (2021)}.
 
 
 
