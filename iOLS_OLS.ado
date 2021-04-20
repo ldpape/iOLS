@@ -98,9 +98,9 @@ program define iOLS_OLS, eclass
 	mata : Sigma_0 = (X'*X)*Sigma_hat*(X'*X)
 	mata : invXpIWX = invsym(X'*IW*X)
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
-	mata : list_Variance = diagonal(Sigma_tild)
-	mata : list_std_err = sqrt(list_Variance)
-	mata : st_matrix("list_std_err", list_std_err)
+	*mata : list_Variance = diagonal(Sigma_tild)
+	*mata : list_std_err = sqrt(list_Variance)
+	*mata : st_matrix("list_std_err", list_std_err)
     mata: st_matrix("Sigma_tild", Sigma_tild)
 	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
