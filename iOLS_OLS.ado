@@ -1,9 +1,6 @@
 program define iOLS_OLS, eclass 
 	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
-	if "`cluster'" =="" & "`robust'" =="" {
-		di as error "Standard errors should be robust to heteroskedasticity using option robust or cluster" 
-	}
 	if  "`robust'" !="" {
 		local opt1  = "`robust' "
 	}
