@@ -45,13 +45,13 @@ program define iOLS_OLS, eclass
 		scalar `cste_hat' = _b[_cons]
 		* Calcul de phi_hat
 		tempvar temp1
-		gen `temp1' = `depvar' * exp(-(`xb_hat' - `cste_hat'))
+		quietly gen `temp1' = `depvar' * exp(-(`xb_hat' - `cste_hat'))
 		quietly sum `temp1' [`weight'`exp'] if e(sample) 
 		tempname phi_hat
 		scalar `phi_hat' = log(`r(mean)')
 		* Calcul de c_hat
 		tempvar temp2
-		gen `temp2' = log(`depvar' + `delta'*exp(`phi_hat' + (`xb_hat' - `cste_hat'))) - (`phi_hat' + (`xb_hat' - `cste_hat'))  // missing delta here
+		quietly gen `temp2' = log(`depvar' + `delta'*exp(`phi_hat' + (`xb_hat' - `cste_hat'))) - (`phi_hat' + (`xb_hat' - `cste_hat'))  // missing delta here
 		quietly sum `temp2' [`weight'`exp'] if e(sample)
 		tempname c_hat
 		scalar `c_hat' = `r(mean)'
@@ -76,7 +76,7 @@ program define iOLS_OLS, eclass
 	tempvar xb_hat
 	quietly predict `xb_hat', xb
 	tempvar ui
-	gen `ui' = exp(`y_tild' + `c_hat' - `xb_hat') - `delta'
+	quietly gen `ui' = exp(`y_tild' + `c_hat' - `xb_hat') - `delta'
 	matrix beta_final = e(b)
 	quietly sum [`weight'`exp'] if e(sample)
 	tempname nobs
@@ -85,7 +85,7 @@ program define iOLS_OLS, eclass
 	* Calcul de Sigma_0, de I-W et de Sigma_tild
 	matrix Sigma = e(V)
 	tempvar cste
-	gen `cste' = 1
+	quietly gen `cste' = 1
 	tempvar ui_bis
 	quietly gen `ui_bis' = 1 - `delta'/(`delta' + `ui')
 	local var_list `indepvar' `cste'
