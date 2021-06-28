@@ -1,3 +1,5 @@
+** 28/06 : Corrected error on Diagonal Matrix of Weights using "cross".
+
 program define iOLS_OLS, eclass 
 	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
@@ -93,10 +95,10 @@ program define iOLS_OLS, eclass
 	mata : IW=.
 	mata : st_view(X,.,"`var_list'")
 	mata : st_view(IW,.,"`ui_bis'")
-	mata : IW = diag(IW)
 	mata : Sigma_hat = st_matrix("Sigma")
 	mata : Sigma_0 = (X'*X)*Sigma_hat*(X'*X)
-	mata : invXpIWX = invsym(X'*IW*X)
+	mata : M = cross(X, IW, X)
+	mata : invXpIWX = invsym(M)  
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
 	*mata : list_Variance = diagonal(Sigma_tild)
 	*mata : list_std_err = sqrt(list_Variance)
