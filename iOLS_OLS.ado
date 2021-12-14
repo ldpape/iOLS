@@ -68,8 +68,9 @@ program define iOLS_OLS, eclass
 		mata : st_matrix("criteria", rowsum(st_matrix("abs_diff2"))/cols(st_matrix("abs_diff2")))
 		captur confirm number criteria[1,1] 
 		if !_rc == 1{
-		local eps = criteria[1,1] }
-		else {
+		local eps = criteria[1,1]
+		}
+		else{
 		local eps = 10000
 		}
 		local k = `k'+1
