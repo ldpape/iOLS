@@ -92,7 +92,7 @@ program define iOLS_OLS, eclass
 		quietly replace `y_tild' = log(`depvar' + `delta' * exp(`xb_hat')) - `c_hat'
 		quietly reg `y_tild' `indepvar' if `touse' [`weight'`exp'], `option'
 		matrix beta_new = e(b)
-		matrix list beta_new
+		*matrix list beta_new
 		* DiffÃ©rence entre les anciens betas et les nouveaux betas
 		matrix diff = beta_new-beta_initial 
 *		matlist diff
