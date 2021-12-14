@@ -40,7 +40,7 @@ program define iOLS_OLS, eclass
 	local eps = 1000	
 	*** ItÃ©rations iOLS
 	_dots 0
-	while ( (`k' < 1000) & (`eps' > 1e-4) ) {
+	while ( (`k' < 1000) & (`eps' > 1e-6) ) {
 		matrix beta_initial = beta_new
 		* Nouveaux beta
 		tempvar xb_hat
@@ -66,8 +66,8 @@ program define iOLS_OLS, eclass
 		* DiffÃ©rence entre les anciens betas et les nouveaux betas
 		matrix diff = beta_initial - beta_new
 		mata : st_matrix("abs_diff", abs(st_matrix("diff")))
-		*mata : st_matrix("abs_diff2", st_matrix("abs_diff"):*st_matrix("abs_diff"))
-		mata : st_matrix("abs_diff2", (st_matrix("abs_diff"):*st_matrix("abs_diff")):/st_matrix("beta_initial")) // implements relative change
+		mata : st_matrix("abs_diff2", st_matrix("abs_diff"):*st_matrix("abs_diff"))
+		*mata : st_matrix("abs_diff2", (st_matrix("abs_diff"):*st_matrix("abs_diff")):/st_matrix("beta_initial")) // implements relative change
 		mata : st_matrix("criteria", rowsum(st_matrix("abs_diff2"))/cols(st_matrix("abs_diff2")))
 		local eps = criteria[1,1]
 		local k = `k'+1
