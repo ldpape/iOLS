@@ -2,6 +2,8 @@
 ** 14/12/2021 : Corrected convergence criteria with "( . )"
 ** 14/12/2021 : Changed Convergence Criteria from Absolute change to Relative Change
 ** 14/12/2021 : Added a quietly after "preserve" 
+** 14/12/2021 : Changed the constant calculation to avoid numerical log(0).
+
 program define iOLS_OLS, eclass 
 	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust CLuster(varlist numeric)]
 	marksample touse
@@ -41,6 +43,7 @@ program define iOLS_OLS, eclass
 	*** ItÃ©rations iOLS
 	_dots 0
 	while ( (`k' < 1000) & (`eps' > 1e-6) ) {
+	/*
 		matrix beta_initial = beta_new
 		* Nouveaux beta
 		tempvar xb_hat
@@ -70,6 +73,34 @@ program define iOLS_OLS, eclass
 		*mata : st_matrix("abs_diff2", (st_matrix("abs_diff"):*st_matrix("abs_diff")):/st_matrix("beta_initial")) // implements relative change
 		mata : st_matrix("criteria", rowsum(st_matrix("abs_diff2"))/cols(st_matrix("abs_diff2")))
 		local eps = criteria[1,1]
+		local k = `k'+1
+		_dots `k' 0
+	}
+	*/
+	
+	matrix beta_initial = beta_new
+		* Nouveaux beta
+		tempvar xb_hat
+		quietly predict `xb_hat', xb
+		* Calcul de c_hat
+		tempvar temp2
+		quietly gen `temp2' = log(`depvar' + `delta'*exp(`xb_hat')) -  (`xb_hat')  // missing delta here
+		quietly sum `temp2' [`weight'`exp'] if e(sample)
+		tempname c_hat
+		scalar `c_hat' = `r(mean)'
+		* Update d'un nouveau y_tild et regression avec le nouvel y_tild
+		quietly replace `y_tild' = log(`depvar' + `delta' * exp(`xb_hat')) - `c_hat'
+		quietly reg `y_tild' `indepvar' if `touse' [`weight'`exp'], `option'
+		matrix beta_new = e(b)
+		matrix list beta_new
+		* DiffÃ©rence entre les anciens betas et les nouveaux betas
+		matrix diff = beta_new-beta_initial 
+*		matlist diff
+		mata : st_matrix("abs_diff", abs(st_matrix("diff")))
+		mata : st_matrix("abs_diff2", st_matrix("abs_diff"):*st_matrix("abs_diff"))
+		*mata : st_matrix("abs_diff2", (st_matrix("abs_diff"):*st_matrix("abs_diff")):/st_matrix("beta_initial")) // implements relative change
+		mata : st_matrix("criteria", rowsum(st_matrix("abs_diff2"))/cols(st_matrix("abs_diff2")))
+				local eps = criteria[1,1]
 		local k = `k'+1
 		_dots `k' 0
 	}
