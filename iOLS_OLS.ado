@@ -1,5 +1,6 @@
 ** 28/06/2021 : Corrected error on Diagonal Matrix of Weights using "cross".
 ** 14/12/2021 : Corrected convergence criteria with "( . )"
+** 14/12/2021 : Changed Convergence Criteria from Absolute change to Relative Change
 
 program define iOLS_OLS, eclass 
 	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust CLuster(varlist numeric)]
