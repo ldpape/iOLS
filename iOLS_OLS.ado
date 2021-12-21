@@ -3,10 +3,13 @@
 ** 14/12/2021 : Changed Convergence Criteria from Absolute change to Relative Change
 ** 14/12/2021 : Added a quietly after "preserve" 
 ** 14/12/2021 : Changed the constant calculation to avoid numerical log(0).
+** 21/12/2021 : Updated to matrix form for speed and options to control convergence.
 
-program define iOLS_OLS, eclass 
-	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust CLuster(varlist numeric)]
+program define iOLS_OLS2, eclass 
+	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust LIMit(real 0.00001) MAXimum(real 1000) CLuster(varlist numeric)]
 	marksample touse
+	preserve
+	quietly keep if `touse'
 	if  "`robust'" !="" {
 		local opt1  = "`robust' "
 	}
@@ -15,151 +18,66 @@ program define iOLS_OLS, eclass
 	}
 	local option = "`opt1'`opt2'"
 	local list_var `anything'
-	* Remarque : la fct gettoken utilise directement des local variables 
-	* en 2e et 3e argument, donc pas besoin de prÃ©ciser que ce sont des
-	* local variable en ajoutant les guillemets stata : `'
 	* get depvar and indepvar
 	gettoken depvar list_var : list_var
 	gettoken indepvar list_var : list_var, p("(")
-    * get endogenous variables and instruments
-	gettoken endog list_var : list_var, bind
-	gettoken endog endog : endog, p("(")
-    gettoken endog instr_temp : endog , p("=")
-    gettoken equalsign instr_temp : instr_temp , p("=")
-	gettoken instr instr_temp : instr_temp, p(")")
-	
-	*di `"`depvar'"'
-	*di `"`indepvar'"'
-	*di `"`endog'"'
-	*di `"`instr'"'
-	
-	*** Initialisation de la boucle
 	tempvar y_tild 
 	quietly gen `y_tild' = log(`depvar' + 1)
-	quietly reg `y_tild' `indepvar' if `touse' [`weight'`exp'], `option'
-	matrix beta_new = e(b)
+	tempvar cste
+	gen `cste' = 1
+	** drop collinear variables
+    _rmcoll `indepvar' `cste', forcedrop 
+	local var_list `endog' `r(varlist)' `cste'  
+	*** Initialisation de la boucle
+	mata : X=.
+	mata : y_tilde =.
+	mata : y =.
+	mata : st_view(X,.,"`var_list'")
+	mata : st_view(y_tilde,.,"`y_tild'")
+	mata : st_view(y,.,"`depvar'")
+	mata : invXX = invsym(cross(X,X))
+	mata : beta_initial = invXX*X'*y_tilde
+
 	local k = 0
 	local eps = 1000	
 	*** ItÃ©rations iOLS
 	_dots 0
-	while ( (`k' < 1000) & (`eps' > 1e-4) ) {
-	/*
-		matrix beta_initial = beta_new
-		* Nouveaux beta
-		tempvar xb_hat
-		quietly predict `xb_hat', xb
-		tempname cste_hat
-		scalar `cste_hat' = _b[_cons]
-		* Calcul de phi_hat
-		tempvar temp1
-		quietly gen `temp1' = `depvar' * exp(-(`xb_hat' - `cste_hat'))
-		quietly sum `temp1' [`weight'`exp'] if e(sample) 
-		tempname phi_hat
-		scalar `phi_hat' = log(`r(mean)')
-		* Calcul de c_hat
-		tempvar temp2
-		quietly gen `temp2' = log(`depvar' + `delta'*exp(`phi_hat' + (`xb_hat' - `cste_hat'))) - (`phi_hat' + (`xb_hat' - `cste_hat'))  // missing delta here
-		quietly sum `temp2' [`weight'`exp'] if e(sample)
-		tempname c_hat
-		scalar `c_hat' = `r(mean)'
+	while ( (`k' < `maximum') & (`eps' > `limit') ) {
+	mata: xb_hat = X*beta_initial
 		* Update d'un nouveau y_tild et regression avec le nouvel y_tild
-		quietly replace `y_tild' = log(`depvar' + `delta' * exp(`xb_hat')) - `c_hat'
-		quietly reg `y_tild' `indepvar' if `touse' [`weight'`exp'], `option'
-		matrix beta_new = e(b)
-		* DiffÃ©rence entre les anciens betas et les nouveaux betas
-		matrix diff = beta_initial - beta_new
-		mata : st_matrix("abs_diff", abs(st_matrix("diff")))
-		mata : st_matrix("abs_diff2", st_matrix("abs_diff"):*st_matrix("abs_diff"))
-		*mata : st_matrix("abs_diff2", (st_matrix("abs_diff"):*st_matrix("abs_diff")):/st_matrix("beta_initial")) // implements relative change
-		mata : st_matrix("criteria", rowsum(st_matrix("abs_diff2"))/cols(st_matrix("abs_diff2")))
-		local eps = criteria[1,1]
-		local k = `k'+1
-		_dots `k' 0
-	}
-	*/
-	
-	matrix beta_initial = beta_new
-		* Nouveaux beta
-		tempvar xb_hat
-		quietly predict `xb_hat', xb
-		* Calcul de c_hat
-		tempvar temp2
-		quietly gen `temp2' = log(`depvar' + `delta'*exp(`xb_hat')) -  (`xb_hat')  // missing delta here
-		quietly sum `temp2' [`weight'`exp'] if e(sample)
-		tempname c_hat
-		scalar `c_hat' = `r(mean)'
-		* Update d'un nouveau y_tild et regression avec le nouvel y_tild
-		quietly replace `y_tild' = log(`depvar' + `delta' * exp(`xb_hat')) - `c_hat'
-		quietly reg `y_tild' `indepvar' if `touse' [`weight'`exp'], `option'
-		matrix beta_new = e(b)
-		*matrix list beta_new
-		* DiffÃ©rence entre les anciens betas et les nouveaux betas
-		matrix diff = beta_new-beta_initial 
-*		matlist diff
-		mata : st_matrix("abs_diff", abs(st_matrix("diff")))
-		mata : st_matrix("abs_diff2", st_matrix("abs_diff"):*st_matrix("abs_diff"))
-		*mata : st_matrix("abs_diff2", (st_matrix("abs_diff"):*st_matrix("abs_diff")):/st_matrix("beta_initial")) // implements relative change
-		mata : st_matrix("criteria", rowsum(st_matrix("abs_diff2"))/cols(st_matrix("abs_diff2")))
-				local eps = criteria[1,1]
-		local k = `k'+1
-		_dots `k' 0
+	mata: y_tilde = log(y + `delta'*exp(xb_hat)) :-mean(log(y + `delta'*exp(xb_hat))- xb_hat)
+		* 2SLS 
+	mata: beta_new = invXX*X'*y_tilde
+		* Difference entre les anciens betas et les nouveaux betas
+	mata: criteria = mean(abs(beta_initial - beta_new):^(2))
+mata: st_numscalar("eps", criteria)
+mata: st_local("eps", strofreal(criteria))
+mata: beta_initial = beta_new
+	local k = `k'+1
+	_dots `k' 0
 	}
 
 	*** Calcul de la bonne matrice de variance-covariance
 	* Calcul du "bon" rÃ©sidu
-	preserve
-	quietly keep if e(sample)	
-	tempvar xb_hat
-	quietly predict `xb_hat', xb
-	tempvar ui
-	quietly gen `ui' = exp(`y_tild' + `c_hat' - `xb_hat') - `delta'
-	matrix beta_final = e(b)
-	quietly sum [`weight'`exp'] if e(sample)
-	tempname nobs
-	scalar  `nobs' = r(N)
-	*di `nobs'
-	* Calcul de Sigma_0, de I-W et de Sigma_tild
+	mata: xb_hat = X*beta_new
+	mata : y_tilde = log(y + `delta'*exp(xb_hat)) :-mean(log(y + `delta'*exp(xb_hat)) - xb_hat)
+	mata: ui = y:*exp(-xb_hat)
+	mata: ui = ui:/(`delta' :+ ui)
+	* Retour en Stata 
+	cap drop y_tild 
+	quietly mata: st_addvar("double", "y_tild")
+	mata: st_store(.,"y_tild",y_tilde)
+	 reg y_tild `r(varlist)' [`weight'`exp'] if `touse', `option'
+	matrix beta_final = e(b) // 	mata: st_matrix("beta_final", beta_new)
 	matrix Sigma = e(V)
-	tempvar cste
-	quietly gen `cste' = 1
-	tempvar ui_bis
-	quietly gen `ui_bis' = 1 - `delta'/(`delta' + `ui')
-	local var_list `indepvar' `cste'
-	mata : X=.
-	mata : IW=.
-	mata : st_view(X,.,"`var_list'")
-	mata : st_view(IW,.,"`ui_bis'")
 	mata : Sigma_hat = st_matrix("Sigma")
-	mata : Sigma_0 = (X'*X)*Sigma_hat*(X'*X)
-	mata : M = cross(X, IW, X)
-	mata : invXpIWX = invsym(M)  
+	mata : Sigma_0 = cross(X,X)*Sigma_hat*cross(X,X)
+	mata : invXpIWX = invsym(cross(X, ui, X))  
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
-	*mata : list_Variance = diagonal(Sigma_tild)
-	*mata : list_std_err = sqrt(list_Variance)
-	*mata : st_matrix("list_std_err", list_std_err)
     mata: st_matrix("Sigma_tild", Sigma_tild)
 	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
 	local nbvar : word count `names'
-	
-******************************************************************************
-* Return the information to STATA output
-******************************************************************************
-// You can use this to check if ereturn is working well or not.
-*	mat result=J(`=`nbvar'+3',3,.) //Defining empty matrix
-*	mat rownames result = `names' "nobs" "niter" "criteria"
-*	mat colnames result = "Beta" "Std.Er." "Std.Er.Approx."
-*	forv n=1/`nbvar' {
-*		mat result[`n',1] = beta_final[1,`n']
-*		mat result[`n',2] = list_std_err[`n',1]
-*		mat result[`n',3] = sqrt(Sigma[`n',`n'])*(1+`delta') // adapted for delta case
-*	}
-*	mat result[`=`nbvar'+1',1] = `nobs'
-*	mat result[`=`nbvar'+2',1] = `k'
-*	mat result[`=`nbvar'+3',1] = `eps'
-*	mat list result
-
-* You need to tell stata what the column / row names are for your covariance matrix 
 	mat rownames Sigma_tild = `names' 
     mat colnames Sigma_tild = `names' 
     ereturn post beta_final Sigma_tild , obs(`=r(N)') depname(`depvar') esample(`touse')  dof(`=r(df r)') 
