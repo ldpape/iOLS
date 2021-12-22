@@ -5,7 +5,7 @@
 ** 14/12/2021 : Changed the constant calculation to avoid numerical log(0).
 ** 21/12/2021 : Updated to matrix form for speed and options to control convergence.
 
-program define iOLS_OLS2, eclass 
+program define iOLS_OLS, eclass 
 	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust LIMit(real 0.00001) MAXimum(real 1000) CLuster(varlist numeric)]
 	marksample touse
 	preserve
