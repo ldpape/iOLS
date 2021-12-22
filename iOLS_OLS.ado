@@ -67,7 +67,7 @@ mata: beta_initial = beta_new
 	cap drop y_tild 
 	quietly mata: st_addvar("double", "y_tild")
 	mata: st_store(.,"y_tild",y_tilde)
-	 reg y_tild `r(varlist)' [`weight'`exp'] if `touse', `option'
+	quietly reg y_tild `r(varlist)' [`weight'`exp'] if `touse', `option'
 	matrix beta_final = e(b) // 	mata: st_matrix("beta_final", beta_new)
 	matrix Sigma = e(V)
 	mata : Sigma_hat = st_matrix("Sigma")
