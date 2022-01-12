@@ -100,13 +100,17 @@ mata: beta_initial = beta_new
 	* Calcul du "bon" rÃ©sidu
 	mata: xb_hat = X*beta_new
 	mata : y_tilde = log(y + `delta'*exp(xb_hat)) :-mean(log(y + `delta'*exp(xb_hat)) - xb_hat)
-	mata: ui = y:*exp(-xb_hat)
-	mata: ui = ui:/(`delta' :+ ui)
 	* Retour en Stata 
 	cap drop y_tild 
 	quietly mata: st_addvar("double", "y_tild")
 	mata: st_store(.,"y_tild",y_tilde)
 	quietly reg y_tild `var_list' [`weight'`exp'] if `touse', `option'
+	cap drop xb_hat
+	quietly predict xb_hat, xb
+	cap drop ui
+	quietly gen ui = `depvar'*exp(-xb_hat)
+	quietly replace ui = ui/(`delta' + ui)
+	mata : st_view(ui,.,"ui")
 	matrix beta_final = e(b) // 	mata: st_matrix("beta_final", beta_new)
 	matrix Sigma = e(V)
 	mata : Sigma_hat = st_matrix("Sigma")
