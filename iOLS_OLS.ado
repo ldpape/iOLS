@@ -82,7 +82,8 @@ di "delta is too small to achieve convergence -- update to larger value"
 		}
 		if ((`check_3'>0.5) & (`k'>500)) {
 	local k = `maximum'
-di "q_hat too far from 1"
+di "q_hat too far from 1: try another delta"
+di "displaying final iteration"
 		}
 					  }
 	}
