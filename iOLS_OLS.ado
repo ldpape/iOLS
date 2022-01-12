@@ -116,7 +116,7 @@ mata: beta_initial = beta_new
 	mata : Sigma_hat = st_matrix("Sigma")
 	mata : Sigma_0 = cross(X,X)*Sigma_hat*cross(X,X)
 	mata : invXpIWX = invsym(cross(X, ui, X))  
-	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
+	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX:/rows(X)^(2)
     mata: st_matrix("Sigma_tild", Sigma_tild)
 	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
