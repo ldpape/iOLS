@@ -1,6 +1,6 @@
 cap program drop iOLS_OLS_test
 program define iOLS_OLS_test, eclass 
-	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1)]
+	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMit(real 0.00001) MAXimum(real 1000)]
 	*marksample touse
 	local list_var `anything'
 	* get depvar and indepvar
