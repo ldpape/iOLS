@@ -110,7 +110,7 @@ mata: beta_initial = beta_new
 	cap drop ui
 	quietly gen ui = `depvar'*exp(-xb_hat)
 	quietly replace ui = ui/(`delta' + ui)
-	mata : st_view(ui,.,"ui")
+	mata : ui= st_data(.,"ui")
 	matrix beta_final = e(b) // 	mata: st_matrix("beta_final", beta_new)
 	matrix Sigma = e(V)
 	mata : Sigma_hat = st_matrix("Sigma")
