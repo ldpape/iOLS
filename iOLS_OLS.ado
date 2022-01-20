@@ -117,7 +117,7 @@ mata: beta_initial = beta_new
 	mata : Sigma_0 = cross(X:/rows(X),X)*Sigma_hat*cross(X:/rows(X),X)
 	mata : invXpIWX = invsym(cross(X:/rows(X), ui, X))  
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
-    mata: st_matrix("Sigma_tild", Sigma_tild)
+   	 mata: st_matrix("Sigma_tild", Sigma_tild)
 	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
 	local nbvar : word count `names'
