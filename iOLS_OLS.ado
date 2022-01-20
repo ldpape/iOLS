@@ -5,12 +5,15 @@
 ** 14/12/2021 : Changed the constant calculation to avoid numerical log(0).
 ** 21/12/2021 : Updated to matrix form for speed and options to control convergence.
 ** 04/01/2021 : Add additional stopping criteria + return of the constant alpha.
+** 20/01/2021 : Corrected S.E. & Added PPML Singleton & Separation drop.
+
 cap program drop iOLS_OLS
 program define iOLS_OLS, eclass 
 	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust LIMit(real 0.00001) MAXimum(real 1000) CLuster(varlist numeric)]
 	marksample touse
 	preserve
-	quietly keep if `touse'
+	quietly keep if `touse'	
+	*** prepare options 
 	if  "`robust'" !="" {
 		local opt1  = "`robust' "
 	}
@@ -21,14 +24,70 @@ program define iOLS_OLS, eclass
 	local list_var `anything'
 	* get depvar and indepvar
 	gettoken depvar list_var : list_var
-	gettoken indepvar list_var : list_var, p("(")
+	gettoken _rhs list_var : list_var, p("(")
+	*** check singletons 
+	/*
+foreach var of varlist `_rhs' {
+  quietly:  unique `var'
+  if r(unique)<3{ // i.e, binary variable
+  cap drop single_group 
+  egen single_group = group(`var')
+  cap drop temp_drop
+  quietly bys single_group: drop if (_N==1) // drop singleton 
+  if r(N_drop) > 0 { 
+  local _rhs : subinstr local _rhs "`var'" "", all
+					}
+			 }
+}
+*/
+*** check seperation : code from "ppml"
+ tempvar logy                            																						// Creates regressand for first step
+ quietly: gen `logy'=log(`depvar') if (`touse')&(`depvar'>0)
+ quietly: reg `logy' `_rhs' if (`touse')&(`depvar'>0)	
+ tempvar zeros                            																						// Creates regressand for first step
+ quietly: gen `zeros'=1                                                                                                 // Initialize observations selector
+ local _drop ""                                                                                                // List of regressors to exclude
+ local indepvar ""     
+    foreach x of varlist `_rhs' {   
+      if (_se[`x']==0) {                                                                                       // Try to include regressors dropped in the
+          qui summarize `x' if (`depvar'>0)&(`touse'), meanonly
+          local _mean=r(mean)
+          qui summarize `x' if (`depvar'==0)&(`touse')
+          if (r(min)<`_mean')&(r(max)>`_mean'){                                            // Include regressor if conditions met and
+              local indepvar "`indepvar' `x'"                                                                        // strict is off 
+          }
+          else{
+              qui su `x' if `touse', d                                                                         // Otherwise, drop regressor
+              local _mad=r(p50)
+              qui inspect  `x'  if `touse'                                                                         
+              qui replace `zeros'=0 if (`x'!=`_mad')&(r(N_unique)==2)&(`touse')                                // Mark observations to drop
+              local _drop "`_drop' `x'"
+          }
+      }                                                                                                        // End of LOOP 1.1 
+      if _se[`x']>0 {                                                                                          // Include safe regressors: LOOP 1.2
+      local indepvar "`indepvar' `x'" 
+      }                                                                                                        // End LOOP 1.2
+    }   
+ qui su `touse' if `touse', mean                                                                               // Summarize touse to obtain N
+ local _enne=r(sum)                                                                                            // Save N
+ qui replace `touse'=0 if (`zeros'==0)&("`keep'"=="")&(`depvar'==0)&(`touse')                                       // Drop observations with perfect fit
+ di                                                                                                              // if keep is off
+ local k_excluded : word count `_drop'                                                                         // Number of variables causing perfect fit
+ di in green "Number of regressors excluded to ensure that the estimates exist: `k_excluded'" 
+ if ("`_drop'" != "") di "Excluded regressors: `_drop'"                                                        // List dropped variables if any
+ qui su `touse' if `touse', mean
+ local _enne = `_enne' - r(sum)                                                                                // Number of observations dropped
+ di in green "Number of observations excluded: `_enne'" 
+ local _enne =  r(sum)
+quietly keep if `touse'	
+	** drop collinear variables
+    _rmcoll `indepvar' `cste', forcedrop 
+	local var_list `r(varlist)' 
+	*** prepare iOLS 
 	tempvar y_tild 
 	quietly gen `y_tild' = log(`depvar' + 1)
 	tempvar cste
 	gen `cste' = 1
-	** drop collinear variables
-    _rmcoll `indepvar' `cste', forcedrop 
-	local var_list `r(varlist)' 
 	*** Initialisation de la boucle
 	mata : X=.
 	mata : y_tilde =.
@@ -117,7 +176,7 @@ mata: beta_initial = beta_new
 	mata : Sigma_0 = cross(X:/rows(X),X)*Sigma_hat*cross(X:/rows(X),X)
 	mata : invXpIWX = invsym(cross(X:/rows(X), ui, X))  
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
-   	 mata: st_matrix("Sigma_tild", Sigma_tild)
+ 	mata: st_matrix("Sigma_tild", Sigma_tild)
 	*** Stocker les resultats dans une matrice
 	local names : colnames e(b)
 	local nbvar : word count `names'
