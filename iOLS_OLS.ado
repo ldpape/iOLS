@@ -5,7 +5,7 @@
 ** 14/12/2021 : Changed the constant calculation to avoid numerical log(0).
 ** 21/12/2021 : Updated to matrix form for speed and options to control convergence.
 ** 04/01/2021 : Add additional stopping criteria + return of the constant alpha.
-** 20/01/2021 : Corrected S.E. & Added PPML Singleton & Separation drop.
+** 20/01/2021 : Corrected S.E. for symmetrization & Added PPML Singleton & Separation drop.
 
 cap program drop iOLS_OLS
 program define iOLS_OLS, eclass 
@@ -25,21 +25,6 @@ program define iOLS_OLS, eclass
 	* get depvar and indepvar
 	gettoken depvar list_var : list_var
 	gettoken _rhs list_var : list_var, p("(")
-	*** check singletons 
-	/*
-foreach var of varlist `_rhs' {
-  quietly:  unique `var'
-  if r(unique)<3{ // i.e, binary variable
-  cap drop single_group 
-  egen single_group = group(`var')
-  cap drop temp_drop
-  quietly bys single_group: drop if (_N==1) // drop singleton 
-  if r(N_drop) > 0 { 
-  local _rhs : subinstr local _rhs "`var'" "", all
-					}
-			 }
-}
-*/
 *** check seperation : code from "ppml"
  tempvar logy                            																						// Creates regressand for first step
  quietly: gen `logy'=log(`depvar') if (`touse')&(`depvar'>0)
@@ -170,15 +155,17 @@ mata: beta_initial = beta_new
 	quietly gen ui = `depvar'*exp(-xb_hat)
 	quietly replace ui = ui/(`delta' + ui)
 	mata : ui= st_data(.,"ui")
-	matrix beta_final = e(b) // 	mata: st_matrix("beta_final", beta_new)
+	matrix beta_final = e(b)
 	matrix Sigma = e(V)
 	mata : Sigma_hat = st_matrix("Sigma")
 	mata : Sigma_0 = cross(X:/rows(X),X)*Sigma_hat*cross(X:/rows(X),X)
-	mata : invXpIWX = invsym(cross(X:/rows(X), ui, X))  
+	mata : invXpIWX = invsym(cross(X:/rows(X), ui, X)) 
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
+	mata : (Sigma_tild+Sigma_tild'):/2  - Sigma_tild
+	mata : Sigma_tild = (Sigma_tild+Sigma_tild'):/2 
  	mata: st_matrix("Sigma_tild", Sigma_tild)
 	*** Stocker les resultats dans une matrice
-	local names : colnames e(b)
+	local names : colnames beta_final
 	local nbvar : word count `names'
 	mat rownames Sigma_tild = `names' 
     mat colnames Sigma_tild = `names' 
