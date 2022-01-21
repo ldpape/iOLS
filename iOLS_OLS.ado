@@ -161,7 +161,6 @@ mata: beta_initial = beta_new
 	mata : Sigma_0 = cross(X:/rows(X),X)*Sigma_hat*cross(X:/rows(X),X)
 	mata : invXpIWX = invsym(cross(X:/rows(X), ui, X)) 
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
-	mata : (Sigma_tild+Sigma_tild'):/2  - Sigma_tild
 	mata : Sigma_tild = (Sigma_tild+Sigma_tild'):/2 
  	mata: st_matrix("Sigma_tild", Sigma_tild)
 	*** Stocker les resultats dans une matrice
