@@ -23,7 +23,7 @@ syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMi
 		local opt2 = "vce(cluster `cluster') "
 	}
 	local option = "`opt1'`opt2'"
-	local list_var `anything'
+	local list_var `varlist'
 	* get depvar and indepvar
 	gettoken depvar list_var : list_var
 	gettoken _rhs list_var : list_var, p("(")
