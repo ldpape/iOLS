@@ -13,6 +13,8 @@ program define iOLS_OLS, eclass
 syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMit(real 0.00001)  MAXimum(real 1000) Robust CLuster(string)]        
 
 	marksample touse
+	markout `touse'  `cluster', s     
+
 	preserve
 	quietly keep if `touse'	
 	*** prepare options 
