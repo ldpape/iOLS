@@ -30,7 +30,7 @@ syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMi
 	gettoken depvar list_var : list_var
 	gettoken _rhs list_var : list_var, p("(")
 foreach var of varlist  `_rhs' {
-quielty drop if missing(`var')	
+quietly drop if missing(`var')	
 }
 *** check seperation : code from "ppml"
  tempvar logy                            																						// Creates regressand for first step
