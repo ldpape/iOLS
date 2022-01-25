@@ -10,7 +10,7 @@
 cap program drop iOLS_OLS
 program define iOLS_OLS, eclass 
 //	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust LIMit(real 0.00001) MAXimum(real 1000) CLuster(varlist numeric)]
-syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMit(real 0.00001)  MAXimum(real 1000) Robust CLuster(string)]        
+syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMit(real 1e-6)  MAXimum(real 1000) Robust CLuster(string)]        
 
 	marksample touse
 	markout `touse'  `cluster', s     
