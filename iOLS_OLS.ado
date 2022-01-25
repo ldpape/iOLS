@@ -160,12 +160,12 @@ mata: beta_initial = beta_new
 	quietly predict xb_hat, xb
 	cap drop ui
 	quietly gen ui = `depvar'*exp(-xb_hat)
-	quietly replace ui = ui/(`delta' + ui)
 	mata : ui= st_data(.,"ui")
+	mata: weight = ui:/(ui :+ `delta')
 	matrix beta_final = e(b)
 	matrix Sigma = e(V)
 	mata : Sigma_hat = st_matrix("Sigma")
-	mata : Sigma_0 = cross(X:/rows(X),X)*Sigma_hat*cross(X:/rows(X),X)
+	mata : Sigma_0 = cross(X:/rows(X),X)*Sigma_hat*cross(X:/rows(X),X)*rows(X)
 	mata : invXpIWX = invsym(cross(X:/rows(X), ui, X)) 
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
 	mata : Sigma_tild = (Sigma_tild+Sigma_tild'):/2 
