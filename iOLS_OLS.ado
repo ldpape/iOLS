@@ -73,13 +73,13 @@ quietly drop if missing(`var')
  local _enne =  r(sum)
 quietly keep if `touse'	
 	** drop collinear variables
+	tempvar cste
+	gen `cste' = 1
     _rmcoll `indepvar' `cste', forcedrop 
 	local var_list `r(varlist)' 
 	*** prepare iOLS 
 	tempvar y_tild 
 	quietly gen `y_tild' = log(`depvar' + 1)
-	tempvar cste
-	gen `cste' = 1
 	*** Initialisation de la boucle
 	mata : X=.
 	mata : y_tilde =.
