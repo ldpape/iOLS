@@ -79,7 +79,7 @@ quietly keep if `touse'
 	local var_list `r(varlist)' 
 	*** prepare iOLS 
 	tempvar y_tild 
-	quietly gen `y_tild' = log(`depvar' + 1)
+	quietly gen `y_tild' = log(`depvar' + `delta')
 	*** Initialisation de la boucle
 	mata : X=.
 	mata : y_tilde =.
@@ -148,25 +148,28 @@ mata: beta_initial = beta_new
 	}
 
 	*** Calcul de la bonne matrice de variance-covariance
-	* Calcul du "bon" rÃ©sidu
-	mata: xb_hat = X*beta_new
-	mata : y_tilde = log(y + `delta'*exp(xb_hat)) :-mean(log(y + `delta'*exp(xb_hat)) - xb_hat)
-	* Retour en Stata 
+	* Calcul du "bon" residu
+	mata: alpha = log(mean(y:*exp(-X[.,1..(cols(X)-1)]*beta_initial[1..(cols(X)-1),1])))
+	mata : beta_initial[(cols(X)),1] = alpha
+	mata: xb_hat = X*beta_initial
+	mata : y_tilde = log(y + `delta'*exp(xb_hat)) :-mean(log(y + `delta'*exp(xb_hat)) - xb_hat) 
+	mata: ui = y:*exp(-xb_hat)
+ 	* Retour en Stata 
 	cap drop y_tild 
 	quietly mata: st_addvar("double", "y_tild")
 	mata: st_store(.,"y_tild",y_tilde)
-	quietly reg y_tild `var_list' [`weight'`exp'] if `touse', `option'
-	cap drop xb_hat
-	quietly predict xb_hat, xb
-	cap drop ui
-	quietly gen ui = `depvar'*exp(-xb_hat)
-	mata : ui= st_data(.,"ui")
+	quietly: reg y_tild `var_list' [`weight'`exp'] if `touse', `option'
+	*cap drop xb_hat
+	*quietly predict xb_hat, xb
+	*cap drop ui
+	*quietly gen ui = `depvar'*exp(-xb_hat)
+	*mata : ui= st_data(.,"ui")
 	mata: weight = ui:/(ui :+ `delta')
 	matrix beta_final = e(b)
 	matrix Sigma = e(V)
 	mata : Sigma_hat = st_matrix("Sigma")
-	mata : Sigma_0 = (cross(X,X):/rows(X))*Sigma_hat*(cross(X,X):/rows(X))
-	mata : invXpIWX = invsym(cross(X, weight, X):/rows(X))
+	mata : Sigma_0 = (quadcross(X,X))*Sigma_hat*(quadcross(X,X))
+	mata : invXpIWX = invsym(quadcross(X, weight, X))
 	mata : Sigma_tild = invXpIWX*Sigma_0*invXpIWX
 	mata : Sigma_tild = (Sigma_tild+Sigma_tild'):/2 
  	mata: st_matrix("Sigma_tild", Sigma_tild)
