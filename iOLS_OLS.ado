@@ -80,9 +80,9 @@ replace `touse' = 0 if missing(`var')
 	mata : X=.
 	mata : y_tilde =.
 	mata : y =.
-	mata : st_view(X,.,"`var_list' `cste'")
-	mata : st_view(y_tilde,.,"`y_tild'")
-	mata : st_view(y,.,"`depvar'")
+	mata : st_view(X,.,"`var_list' `cste'",`touse')
+	mata : st_view(y_tilde,.,"`y_tild'",`touse')
+	mata : st_view(y,.,"`depvar'",`touse')
 	mata : invXX = invsym(cross(X,X))
 	mata : beta_initial = invXX*cross(X,y_tilde)
 	mata : beta_t_1 = beta_initial // needed to initialize
