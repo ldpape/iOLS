@@ -27,7 +27,7 @@ syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMi
 	gettoken depvar list_var : list_var
 	gettoken _rhs list_var : list_var, p("(")
 foreach var of varlist `depvar' `_rhs' {
-replace `touse' = 0 if missing(`var')	
+quietly: replace `touse' = 0 if missing(`var')	
 }
 *** check seperation : code from "ppml"
  tempvar logy                            																						// Creates regressand for first step
@@ -80,9 +80,9 @@ replace `touse' = 0 if missing(`var')
 	mata : X=.
 	mata : y_tilde =.
 	mata : y =.
-	mata : st_view(X,.,"`var_list' `cste'",`touse')
-	mata : st_view(y_tilde,.,"`y_tild'",`touse')
-	mata : st_view(y,.,"`depvar'",`touse')
+	mata : st_view(X,.,"`var_list' `cste'","`touse'")
+	mata : st_view(y_tilde,.,"`y_tild'","`touse'")
+	mata : st_view(y,.,"`depvar'","`touse'")
 	mata : invXX = invsym(cross(X,X))
 	mata : beta_initial = invXX*cross(X,y_tilde)
 	mata : beta_t_1 = beta_initial // needed to initialize
@@ -152,8 +152,9 @@ mata: beta_initial = beta_new
 	mata: ui = y:*exp(-xb_hat)
  	* Retour en Stata 
 	cap drop `y_tild' 
-	quietly mata: st_addvar("double", "`y_tild'")
-	mata: st_store(.,"`y_tild'",y_tilde)
+	*quietly mata: st_addvar("double", "`y_tild'")
+	*mata: st_store(.,"`y_tild'",y_tilde)
+	mata: st_store(., st_addvar("double", "`y_tild'"), "`touse'", y_tilde)
 	quietly: reg `y_tild' `var_list' [`weight'`exp'] if `touse', `option'
 	*cap drop xb_hat
 	*quietly predict xb_hat, xb
@@ -174,13 +175,19 @@ mata: beta_initial = beta_new
 	local nbvar : word count `names'
 	mat rownames Sigma_tild = `names' 
     mat colnames Sigma_tild = `names' 
+	cap drop _COPY
+	quietly: gen _COPY = `touse'
     ereturn post beta_final Sigma_tild , obs(`=e(N)') depname(`depvar') esample(`touse')  dof(`=e(df r)') 
-    	cap drop iOLS_xb_hat
+    cap drop iOLS_xb_hat
 	cap drop iOLS_error
-	quietly mata: st_addvar("double", "iOLS_xb_hat")
-	mata: st_store(.,"iOLS_xb_hat",xb_hat)
-	quietly mata: st_addvar("double", "iOLS_error")
-	mata: st_store(.,"iOLS_error",ui)    
+	*quietly mata: st_addvar("double", "iOLS_xb_hat")
+	*mata: st_store(.,"iOLS_xb_hat",xb_hat)
+	*quietly mata: st_addvar("double", "iOLS_error")
+	*mata: st_store(.,"iOLS_error",ui)
+    	mata: st_store(., st_addvar("double", "iOLS_error"), "_COPY", ui)
+    	mata: st_store(., st_addvar("double", "iOLS_xb_hat"),"_COPY", xb_hat)
+		cap drop _COPY
+
 ereturn scalar delta = `delta'
 ereturn  scalar eps =   `eps'
 ereturn  scalar niter =  `k'
