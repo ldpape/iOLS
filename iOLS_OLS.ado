@@ -175,6 +175,12 @@ mata: beta_initial = beta_new
 	mat rownames Sigma_tild = `names' 
     mat colnames Sigma_tild = `names' 
     ereturn post beta_final Sigma_tild , obs(`=e(N)') depname(`depvar') esample(`touse')  dof(`=e(df r)') 
+    	cap drop iOLS_xb_hat
+	cap drop iOLS_error
+	quietly mata: st_addvar("double", "iOLS_xb_hat")
+	mata: st_store(.,"iOLS_xb_hat",xb_hat)
+	quietly mata: st_addvar("double", "iOLS_error")
+	mata: st_store(.,"iOLS_error",ui)    
 ereturn scalar delta = `delta'
 ereturn  scalar eps =   `eps'
 ereturn  scalar niter =  `k'
