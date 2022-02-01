@@ -6,7 +6,7 @@
 ** 21/12/2021 : Updated to matrix form for speed and options to control convergence.
 ** 04/01/2021 : Add additional stopping criteria + return of the constant alpha.
 ** 20/01/2021 : Corrected S.E. for symmetrization & Added PPML Singleton & Separation drop.
-
+** 01/02/2021 : Drop "preserve" to gain speed
 cap program drop iOLS_OLS
 program define iOLS_OLS, eclass 
 //	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust LIMit(real 0.00001) MAXimum(real 1000) CLuster(varlist numeric)]
@@ -14,9 +14,6 @@ syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMi
 
 	marksample touse
 	markout `touse'  `cluster', s     
-
-	preserve
-	quietly keep if `touse'	
 	*** prepare options 
 	if  "`robust'" !="" {
 		local opt1  = "`robust' "
@@ -29,8 +26,8 @@ syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMi
 	* get depvar and indepvar
 	gettoken depvar list_var : list_var
 	gettoken _rhs list_var : list_var, p("(")
-foreach var of varlist  `_rhs' {
-quietly drop if missing(`var')	
+foreach var of varlist `depvar' `_rhs' {
+replace `touse' = 0 if missing(`var')	
 }
 *** check seperation : code from "ppml"
  tempvar logy                            																						// Creates regressand for first step
@@ -71,15 +68,14 @@ quietly drop if missing(`var')
  local _enne = `_enne' - r(sum)                                                                                // Number of observations dropped
  di in green "Number of observations excluded: `_enne'" 
  local _enne =  r(sum)
-quietly keep if `touse'	
 	** drop collinear variables
 	tempvar cste
 	gen `cste' = 1
-    _rmcoll `indepvar' `cste', forcedrop 
+    _rmcoll `indepvar' `cste' if `touse', forcedrop 
 	local var_list `r(varlist)' 
 	*** prepare iOLS 
 	tempvar y_tild 
-	quietly gen `y_tild' = log(`depvar' + `delta')
+	quietly gen `y_tild' = log(`depvar' + `delta') if `touse'
 	*** Initialisation de la boucle
 	mata : X=.
 	mata : y_tilde =.
@@ -155,10 +151,10 @@ mata: beta_initial = beta_new
 	mata : y_tilde = log(y + `delta'*exp(xb_hat)) :-mean(log(y + `delta'*exp(xb_hat)) - xb_hat) 
 	mata: ui = y:*exp(-xb_hat)
  	* Retour en Stata 
-	cap drop y_tild 
-	quietly mata: st_addvar("double", "y_tild")
-	mata: st_store(.,"y_tild",y_tilde)
-	quietly: reg y_tild `var_list' [`weight'`exp'] if `touse', `option'
+	cap drop `y_tild' 
+	quietly mata: st_addvar("double", "`y_tild'")
+	mata: st_store(.,"`y_tild'",y_tilde)
+	quietly: reg `y_tild' `var_list' [`weight'`exp'] if `touse', `option'
 	*cap drop xb_hat
 	*quietly predict xb_hat, xb
 	*cap drop ui
@@ -179,7 +175,6 @@ mata: beta_initial = beta_new
 	mat rownames Sigma_tild = `names' 
     mat colnames Sigma_tild = `names' 
     ereturn post beta_final Sigma_tild , obs(`=e(N)') depname(`depvar') esample(`touse')  dof(`=e(df r)') 
-	restore 
 ereturn scalar delta = `delta'
 ereturn  scalar eps =   `eps'
 ereturn  scalar niter =  `k'
