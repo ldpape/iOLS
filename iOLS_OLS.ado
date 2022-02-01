@@ -6,7 +6,7 @@
 ** 21/12/2021 : Updated to matrix form for speed and options to control convergence.
 ** 04/01/2021 : Add additional stopping criteria + return of the constant alpha.
 ** 20/01/2021 : Corrected S.E. for symmetrization & Added PPML Singleton & Separation drop.
-** 01/02/2021 : Drop "preserve" to gain speed
+** 01/02/2021 : Drop "preserve" to gain speed & postestimation
 cap program drop iOLS_OLS
 program define iOLS_OLS, eclass 
 //	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust LIMit(real 0.00001) MAXimum(real 1000) CLuster(varlist numeric)]
