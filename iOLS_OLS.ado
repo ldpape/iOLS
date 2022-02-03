@@ -111,13 +111,12 @@ mata: st_local("eps", strofreal(criteria))
 	mata: st_local("check_3", strofreal(check_3))
 	mata: q_hat_m0 = q_hat_m
 		if ((`check_1'<1e-4)&(`check_2'>1e-2)) {
-di "delta is too small to achieve convergence -- update to larger value"
-	local k = `maximum'
+di "Convergence may be slow : consider using another delta"
+*	local k = `maximum'
 		}
 		if ((`check_3'>0.5) & (`k'>500)) {
-	local k = `maximum'
-di "q_hat too far from 1: try another delta"
-di "displaying final iteration"
+*	local k = `maximum'
+di "Convergence may be slow : consider using another delta"
 		}
 					  }
 	}
