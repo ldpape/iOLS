@@ -7,6 +7,8 @@
 ** 04/01/2021 : Add additional stopping criteria + return of the constant alpha.
 ** 20/01/2021 : Corrected S.E. for symmetrization & Added PPML Singleton & Separation drop.
 ** 01/02/2021 : Drop "preserve" to gain speed & postestimation
+** 03/02/2021 : Check Singleton using Sergio Correia, Zylkin and Guimarães method.
+
 cap program drop iOLS_OLS
 program define iOLS_OLS, eclass 
 //	syntax [anything] [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) Robust LIMit(real 0.00001) MAXimum(real 1000) CLuster(varlist numeric)]
@@ -26,52 +28,37 @@ syntax varlist [if] [in] [aweight pweight fweight iweight] [, DELta(real 1) LIMi
 	* get depvar and indepvar
 	gettoken depvar list_var : list_var
 	gettoken _rhs list_var : list_var, p("(")
+* check singleton 
 foreach var of varlist `depvar' `_rhs' {
 quietly: replace `touse' = 0 if missing(`var')	
 }
-*** check seperation : code from "ppml"
- tempvar logy                            																						// Creates regressand for first step
- quietly: gen `logy'=log(`depvar') if (`touse')&(`depvar'>0)
- quietly: reg `logy' `_rhs' if (`touse')&(`depvar'>0)	
- tempvar zeros                            																						// Creates regressand for first step
- quietly: gen `zeros'=1                                                                                                 // Initialize observations selector
- local _drop ""                                                                                                // List of regressors to exclude
- local indepvar ""     
-    foreach x of varlist `_rhs' {   
-      if (_se[`x']==0) {                                                                                       // Try to include regressors dropped in the
-          qui summarize `x' if (`depvar'>0)&(`touse'), meanonly
-          local _mean=r(mean)
-          qui summarize `x' if (`depvar'==0)&(`touse')
-          if (r(min)<`_mean')&(r(max)>`_mean'){                                            // Include regressor if conditions met and
-              local indepvar "`indepvar' `x'"                                                                        // strict is off 
-          }
-          else{
-              qui su `x' if `touse', d                                                                         // Otherwise, drop regressor
-              local _mad=r(p50)
-              qui inspect  `x'  if `touse'                                                                         
-              qui replace `zeros'=0 if (`x'!=`_mad')&(r(N_unique)==2)&(`touse')                                // Mark observations to drop
-              local _drop "`_drop' `x'"
-          }
-      }                                                                                                        // End of LOOP 1.1 
-      if _se[`x']>0 {                                                                                          // Include safe regressors: LOOP 1.2
-      local indepvar "`indepvar' `x'" 
-      }                                                                                                        // End LOOP 1.2
-    }   
- qui su `touse' if `touse', mean                                                                               // Summarize touse to obtain N
- local _enne=r(sum)                                                                                            // Save N
- qui replace `touse'=0 if (`zeros'==0)&("`keep'"=="")&(`depvar'==0)&(`touse')                                       // Drop observations with perfect fit
- di                                                                                                              // if keep is off
- local k_excluded : word count `_drop'                                                                         // Number of variables causing perfect fit
- di in green "Number of regressors excluded to ensure that the estimates exist: `k_excluded'" 
- if ("`_drop'" != "") di "Excluded regressors: `_drop'"                                                        // List dropped variables if any
- qui su `touse' if `touse', mean
- local _enne = `_enne' - r(sum)                                                                                // Number of observations dropped
- di in green "Number of observations excluded: `_enne'" 
- local _enne =  r(sum)
+loc tol = 1e-5
+tempvar u w xb
+gen `u' =  !`depvar' if `touse'
+ su `u'  if `touse', mean
+loc K = ceil(r(sum) / `tol' ^ 2)
+gen `w' = cond(`depvar', `K', 1)  if `touse'
+while 1 {
+	*qui reghdfe u [fw=w], absorb(id1 id2) resid(e)
+	reg `u' `_rhs' [fw=`w']  if `touse'
+	predict double `xb'  if `touse', xb
+	replace `xb' = 0 if (abs(`xb') < `tol')&(`touse')
+
+	* Stop once all predicted values become non-negative
+	 cou if (`xb' < 0) & (`touse')
+	if !r(N) {
+		continue, break
+	}
+
+	replace `u' = max(`xb', 0)  if `touse'
+	drop `xb' `w'
+}
+*quielty: gen is_sep = `xb' > 0
+replace `touse'  = (`xb' <= 0) // & (`touse')
 	** drop collinear variables
 	tempvar cste
 	gen `cste' = 1
-    _rmcoll `indepvar' `cste' if `touse', forcedrop 
+    _rmcoll `_rhs' `cste' if `touse', forcedrop 
 	local var_list `r(varlist)' 
 	*** prepare iOLS 
 	tempvar y_tild 
