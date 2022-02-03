@@ -34,27 +34,27 @@ quietly: replace `touse' = 0 if missing(`var')
 }
 loc tol = 1e-5
 tempvar u w xb
-gen `u' =  !`depvar' if `touse'
- su `u'  if `touse', mean
+quietly: gen `u' =  !`depvar' if `touse'
+quietly: su `u'  if `touse', mean
 loc K = ceil(r(sum) / `tol' ^ 2)
-gen `w' = cond(`depvar', `K', 1)  if `touse'
+quietly: gen `w' = cond(`depvar', `K', 1)  if `touse'
 while 1 {
 	*qui reghdfe u [fw=w], absorb(id1 id2) resid(e)
-	reg `u' `_rhs' [fw=`w']  if `touse'
-	predict double `xb'  if `touse', xb
-	replace `xb' = 0 if (abs(`xb') < `tol')&(`touse')
+quietly:	reg `u' `_rhs' [fw=`w']  if `touse'
+quietly:	predict double `xb'  if `touse', xb
+quietly:	replace `xb' = 0 if (abs(`xb') < `tol')&(`touse')
 
 	* Stop once all predicted values become non-negative
-	 cou if (`xb' < 0) & (`touse')
+quietly:	 cou if (`xb' < 0) & (`touse')
 	if !r(N) {
 		continue, break
 	}
 
-	replace `u' = max(`xb', 0)  if `touse'
-	drop `xb' `w'
+quietly:	replace `u' = max(`xb', 0)  if `touse'
+quietly:	drop `xb' `w'
 }
 *quielty: gen is_sep = `xb' > 0
-replace `touse'  = (`xb' <= 0) // & (`touse')
+quietly: replace `touse'  = (`xb' <= 0) // & (`touse')
 	** drop collinear variables
 	tempvar cste
 	gen `cste' = 1
